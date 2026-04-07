@@ -1,0 +1,3146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPC-100 — Sistema de Evaluación de Personal de Seguridad</title>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-deep: #060a14;
+  --bg-base: #0a0e1a;
+  --bg-surface: #0f1525;
+  --bg-card: #141c2e;
+  --bg-elevated: #1a2540;
+  --accent-blue: #1d4ed8;
+  --accent-blue-light: #2563eb;
+  --accent-blue-glow: #3b82f6;
+  --accent-steel: #94a3b8;
+  --accent-cyan: #0ea5e9;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+  --border: #1e2d4a;
+  --border-bright: #2d4a7a;
+  --shadow-blue: 0 0 30px rgba(29,78,216,0.15);
+  --font-display: 'Rajdhani', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+/* ─── GRID BACKGROUND ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(29,78,216,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29,78,216,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── HEADER ─── */
+#app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(6,10,20,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-badge {
+  background: var(--accent-blue);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-badge::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 30%;
+  height: 100%;
+  background: rgba(255,255,255,0.1);
+  clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+.logo-text h1 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.logo-text p {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+.header-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover, .nav-btn.active {
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+  background: var(--bg-card);
+}
+
+.nav-btn.active {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue-glow);
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 6px var(--accent-green);
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ─── MAIN CONTAINER ─── */
+#app-root {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 64px);
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── HERO / LANDING ─── */
+#view-home {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 3rem 0 4rem;
+}
+
+.hero-label {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-blue-glow);
+  border: 1px solid var(--accent-blue);
+  padding: 4px 12px;
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 50%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+}
+
+.hero-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.hero-card:hover {
+  border-color: var(--accent-blue);
+  background: var(--bg-elevated);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-blue);
+}
+
+.hero-card:hover::before { opacity: 1; }
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.card-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.card-arrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-blue-glow);
+  letter-spacing: 0.08em;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 3rem;
+}
+
+.stat-cell {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-blue-glow);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--font-mono);
+  margin-top: 4px;
+}
+
+/* ─── EVALUATION VIEW ─── */
+#view-eval {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-blue-glow);
+  background: rgba(29,78,216,0.1);
+  border: 1px solid rgba(29,78,216,0.3);
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ─── FORM STYLES ─── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+input, select, textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.12);
+}
+
+select option { background: var(--bg-surface); }
+
+.form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-card-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ─── BUTTONS ─── */
+.btn {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 24px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-blue-light);
+  box-shadow: 0 0 20px rgba(29,78,216,0.4);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-steel);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: rgba(239,68,68,0.15);
+  color: var(--accent-red);
+  border: 1px solid rgba(239,68,68,0.3);
+}
+
+.btn-danger:hover {
+  background: rgba(239,68,68,0.25);
+}
+
+.btn-success {
+  background: rgba(16,185,129,0.15);
+  color: var(--accent-green);
+  border: 1px solid rgba(16,185,129,0.3);
+}
+
+.btn-success:hover { background: rgba(16,185,129,0.25); }
+
+.btn-sm { padding: 6px 14px; font-size: 0.78rem; }
+
+/* ─── PROGRESS BAR ─── */
+.progress-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.progress-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+}
+
+.progress-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-blue-glow);
+}
+
+.progress-bar-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ─── QUESTION CARD ─── */
+.question-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.question-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent-blue), var(--accent-cyan));
+}
+
+.question-number {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-blue-glow);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+.question-text {
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.question-weight {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-bottom: 1.2rem;
+}
+
+/* ─── LIKERT OPTIONS ─── */
+.likert-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.likert-option {
+  flex: 1;
+  min-width: 80px;
+}
+
+.likert-option input { display: none; }
+
+.likert-option label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.likert-option input:checked + label {
+  background: rgba(29,78,216,0.15);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue-glow);
+}
+
+.likert-option label:hover {
+  border-color: var(--border-bright);
+  color: var(--text-primary);
+}
+
+.likert-value {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* ─── MULTIPLE CHOICE ─── */
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mc-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mc-option:hover {
+  border-color: var(--border-bright);
+  background: var(--bg-elevated);
+}
+
+.mc-option.selected {
+  border-color: var(--accent-blue);
+  background: rgba(29,78,216,0.1);
+}
+
+.mc-option input { display: none; }
+
+.mc-indicator {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-bright);
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mc-option.selected .mc-indicator {
+  border-color: var(--accent-blue);
+  background: var(--accent-blue);
+}
+
+.mc-option.selected .mc-indicator::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.mc-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.mc-option.selected .mc-label { color: var(--text-primary); }
+
+/* ─── BIOMETRIC PANEL ─── */
+.biometric-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  position: sticky;
+  top: 80px;
+}
+
+.bio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.bio-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-steel);
+}
+
+.bio-status {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.bio-status.active {
+  background: rgba(16,185,129,0.15);
+  color: var(--accent-green);
+  border: 1px solid rgba(16,185,129,0.3);
+}
+
+.bio-status.inactive {
+  background: rgba(239,68,68,0.1);
+  color: var(--accent-red);
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+#bio-video-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+#bio-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#bio-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.bio-overlay-label {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.7);
+  background: rgba(0,0,0,0.5);
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+}
+
+.emotion-display {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.emotion-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.emotion-name {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  min-width: 80px;
+}
+
+.emotion-bar-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 8px;
+}
+
+.emotion-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.emotion-pct {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  min-width: 35px;
+  text-align: right;
+}
+
+.emotion-colors {
+  neutral: #94a3b8;
+  happy: #10b981;
+  sad: #6366f1;
+  angry: #ef4444;
+  surprised: #f59e0b;
+  fearful: #f97316;
+  disgusted: #8b5cf6;
+}
+
+/* ─── RESULT VIEW ─── */
+.result-card {
+  background: var(--bg-card);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.result-banner {
+  padding: 2rem;
+  text-align: center;
+}
+
+.result-banner.recommended {
+  background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05));
+  border: 1px solid rgba(16,185,129,0.3);
+}
+
+.result-banner.risky {
+  background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+  border: 1px solid rgba(245,158,11,0.3);
+}
+
+.result-banner.not-recommended {
+  background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05));
+  border: 1px solid rgba(239,68,68,0.3);
+}
+
+.result-verdict {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.result-score-big {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.result-score-big.rec { color: var(--accent-green); }
+.result-score-big.risk { color: var(--accent-amber); }
+.result-score-big.no { color: var(--accent-red); }
+
+.score-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.score-item {
+  text-align: center;
+}
+
+.score-item-value {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent-blue-glow);
+}
+
+.score-item-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+/* ─── ADMIN VIEW ─── */
+#view-admin {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.admin-tab {
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: none;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  cursor: pointer;
+  position: relative;
+  bottom: -1px;
+  transition: all 0.2s;
+  border-radius: 4px 4px 0 0;
+}
+
+.admin-tab.active {
+  background: var(--bg-card);
+  border-color: var(--border);
+  border-bottom-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.admin-tab:hover:not(.active) { color: var(--text-secondary); }
+
+.admin-panel { display: none; }
+.admin-panel.active { display: block; }
+
+/* ─── TABLE ─── */
+.data-table-wrap { overflow-x: auto; }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.data-table th {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(30,45,74,0.5);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.data-table tr:hover td { background: var(--bg-elevated); }
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.badge-green { background: rgba(16,185,129,0.15); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3); }
+.badge-amber { background: rgba(245,158,11,0.15); color: var(--accent-amber); border: 1px solid rgba(245,158,11,0.3); }
+.badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3); }
+.badge-blue { background: rgba(29,78,216,0.15); color: var(--accent-blue-glow); border: 1px solid rgba(29,78,216,0.3); }
+
+/* ─── LOGIN ─── */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,10,20,0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(10px);
+}
+
+.login-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 380px;
+}
+
+.login-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.login-sub {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.login-error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: var(--accent-red);
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,10,20,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  backdrop-filter: blur(5px);
+  padding: 1rem;
+}
+
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.modal-close:hover { color: var(--text-primary); }
+
+/* ─── FILTERS ─── */
+.filter-bar {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.filter-bar select, .filter-bar input {
+  flex: 1;
+  min-width: 150px;
+  padding: 8px 12px;
+}
+
+/* ─── QUESTION EDITOR ─── */
+.question-editor {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.q-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.q-number {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-blue-glow);
+}
+
+.weight-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--accent-amber);
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.2);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+/* ─── ALERT / NOTIFICATION ─── */
+.alert-box {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-info { background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2); color: var(--accent-cyan); }
+.alert-warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--accent-amber); }
+.alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--accent-green); }
+.alert-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--accent-red); }
+
+/* ─── TOAST ─── */
+#toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-bright);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 12px 20px;
+  border-radius: 6px;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s;
+  pointer-events: none;
+  max-width: 300px;
+}
+
+#toast.show { opacity: 1; transform: translateY(0); }
+
+/* ─── TWO COL LAYOUT ─── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .two-col { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .biometric-panel { position: static; }
+  #app-header { padding: 0 1rem; }
+  .hero-title { font-size: 2.5rem; }
+  .logo-text p { display: none; }
+}
+
+/* ─── CONSENT BOX ─── */
+.consent-box {
+  background: rgba(29,78,216,0.08);
+  border: 1px solid rgba(29,78,216,0.2);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.consent-box strong { color: var(--text-primary); }
+
+/* ─── REPORT DETAIL ─── */
+.report-section {
+  margin-bottom: 1.5rem;
+}
+
+.report-section-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-blue-glow);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.report-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(30,45,74,0.4);
+  font-size: 0.82rem;
+}
+
+.report-row-label { color: var(--text-muted); }
+.report-row-value { color: var(--text-primary); font-family: var(--font-mono); }
+
+/* ─── EMOTION TIMELINE ─── */
+.emotion-timeline {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.timeline-entry {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(30,45,74,0.3);
+  color: var(--text-muted);
+}
+
+.t-time { color: var(--accent-blue-glow); min-width: 60px; }
+.t-q { min-width: 50px; }
+.t-emotion { min-width: 100px; color: var(--text-secondary); }
+.t-conf { color: var(--accent-amber); }
+
+/* ─── QUESTION MANAGEMENT ─── */
+.profile-selector-admin {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.profile-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.profile-btn:hover, .profile-btn.active {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue-glow);
+  background: rgba(29,78,216,0.1);
+}
+
+/* ─── LOADING SPINNER ─── */
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 1rem auto;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ─── ADD QUESTION FORM ─── */
+.add-q-form {
+  background: var(--bg-surface);
+  border: 1px solid var(--accent-blue);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+.add-q-form.open { display: block; }
+
+.options-list { margin-top: 0.5rem; }
+
+.option-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.option-item input { flex: 1; }
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header id="app-header">
+  <div class="logo-mark">
+    <div class="logo-badge">SPC-100</div>
+    <div class="logo-text">
+      <h1>Evaluación de Personal</h1>
+      <p>Sistema Profesional de Seguridad Corporativa</p>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <button class="nav-btn active" onclick="showView('home')">Inicio</button>
+    <button class="nav-btn" onclick="showView('eval')">Evaluación</button>
+    <button class="nav-btn" onclick="showView('admin')">Administración</button>
+  </nav>
+  <div class="header-status">
+    <div class="status-dot"></div>
+    <span>SISTEMA OPERATIVO</span>
+  </div>
+</header>
+
+<!-- ─── TOAST ─── -->
+<div id="toast"></div>
+
+<!-- ─── APP ROOT ─── -->
+<div id="app-root">
+
+  <!-- ══════════════════════════════════════════
+       VIEW: HOME
+  ══════════════════════════════════════════ -->
+  <div id="view-home" class="view active">
+    <div id="view-home-inner">
+      <div class="hero-section">
+        <div class="hero-label">Plataforma SPC-100 — Versión 2.0</div>
+        <h2 class="hero-title">Evaluación Integral<br>de Personal de Seguridad</h2>
+        <p class="hero-sub">Sistema de evaluación psicológica y biométrica para procesos de contratación de personal de seguridad. Análisis de microexpresiones en tiempo real combinado con baterías psicométricas diferenciadas por perfil.</p>
+
+        <div class="hero-cards">
+          <div class="hero-card" onclick="showView('eval')">
+            <div class="card-icon">🧠</div>
+            <div class="card-title">Módulo de Evaluación</div>
+            <p class="card-desc">Acceso para postulantes. Complete el registro, el test psicológico y la validación biométrica por cámara facial.</p>
+            <div class="card-arrow">→ INICIAR EVALUACIÓN</div>
+          </div>
+          <div class="hero-card" onclick="showView('admin')">
+            <div class="card-icon">🔐</div>
+            <div class="card-title">Panel de Administración</div>
+            <p class="card-desc">Acceso restringido. Gestione baterías de preguntas, consulte historial de evaluaciones y descargue informes.</p>
+            <div class="card-arrow">→ ACCEDER CON CREDENCIALES</div>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-cell">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Perfiles Evaluados</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-value">15+</div>
+            <div class="stat-label">Preguntas por Perfil</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-value">80%</div>
+            <div class="stat-label">Componente Test</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-value">20%</div>
+            <div class="stat-label">Componente Biométrico</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       VIEW: EVALUATION
+  ══════════════════════════════════════════ -->
+  <div id="view-eval" class="view">
+    <div style="max-width:900px;margin:0 auto;padding:2rem;">
+
+      <!-- STEP 0: Registration -->
+      <div id="eval-step-register">
+        <div class="section-header">
+          <span class="section-badge">Paso 1 / 3</span>
+          <h2 class="section-title">Registro del Postulante</h2>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-title">📋 Datos Personales</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre Completo *</label>
+              <input type="text" id="reg-nombre" placeholder="Ej: Juan Pérez Rodríguez">
+            </div>
+            <div class="form-group">
+              <label>RUT / DNI *</label>
+              <input type="text" id="reg-rut" placeholder="Ej: 12.345.678-9">
+            </div>
+            <div class="form-group">
+              <label>Edad *</label>
+              <input type="number" id="reg-edad" min="18" max="65" placeholder="Ej: 28">
+            </div>
+            <div class="form-group">
+              <label>Fecha de Nacimiento *</label>
+              <input type="date" id="reg-fnac">
+            </div>
+            <div class="form-group">
+              <label>Correo Electrónico</label>
+              <input type="email" id="reg-email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input type="tel" id="reg-tel" placeholder="+56 9 XXXX XXXX">
+            </div>
+            <div class="form-group full">
+              <label>Cargo al que Postula *</label>
+              <select id="reg-cargo" onchange="onCargoChange()">
+                <option value="">— Seleccione un cargo —</option>
+                <option value="guardia_estandar">Guardia Estándar</option>
+                <option value="guardia_tactico">Guardia Táctico</option>
+                <option value="jefe_grupo">Jefe de Grupo</option>
+                <option value="supervisor">Supervisor</option>
+                <option value="jefe_seguridad">Jefe de Seguridad</option>
+                <option value="administrador_contrato">Administrador de Contrato</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Fecha de Evaluación</label>
+              <input type="text" id="reg-fecha" readonly style="color:var(--text-muted)">
+            </div>
+          </div>
+        </div>
+
+        <div id="cargo-info" style="display:none" class="alert-box alert-info">
+          <span>ℹ️</span>
+          <span id="cargo-info-text"></span>
+        </div>
+
+        <div class="consent-box">
+          <strong>Aviso de Privacidad y Consentimiento Biométrico:</strong><br>
+          Al iniciar la evaluación, el sistema solicitará de forma obligatoria acceso a la cámara del dispositivo para realizar análisis de microexpresiones faciales como parte del proceso de evaluación. El uso de la cámara es necesario para la prueba. Su imagen no es almacenada en video, y los datos numéricos recopilados son de uso exclusivo del proceso de selección y se tratarán con carácter confidencial.
+        </div>
+
+        <div style="display:flex;gap:1rem;justify-content:flex-end">
+          <button class="btn btn-secondary" onclick="showView('home')">← Volver</button>
+          <button class="btn btn-primary" onclick="startEval()">Iniciar Evaluación →</button>
+        </div>
+      </div>
+
+      <!-- STEP 1: Biometric Consent -->
+      <div id="eval-step-bio" style="display:none">
+        <div class="section-header">
+          <span class="section-badge">Paso 2 / 3</span>
+          <h2 class="section-title">Configuración Biométrica</h2>
+        </div>
+
+        <div class="form-card" style="text-align:center">
+          <div style="font-size:3rem;margin-bottom:1rem">📷</div>
+          <div class="form-card-title" style="justify-content:center">Activación del Lector de Microexpresiones</div>
+          <p style="color:var(--text-secondary);margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto">
+            El sistema utilizará su cámara para analizar microexpresiones durante el test. Esto es un requisito excluyente para poder avanzar. Su imagen en video no se almacena, el sistema solo traduce sus expresiones en datos.
+          </p>
+          <div id="bio-init-status" class="spinner"></div>
+          <div class="loading-text" id="bio-init-text">Cargando modelos de análisis facial...</div>
+          <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem">
+            <!-- Botón obligatorio para activar la cámara -->
+            <button class="btn btn-primary" onclick="enableCamera()" id="btn-enable-cam" style="display:none">Activar Cámara →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Test -->
+      <div id="eval-step-test" style="display:none">
+        <div class="section-header">
+          <span class="section-badge">Paso 3 / 3</span>
+          <h2 class="section-title">Test de Evaluación</h2>
+        </div>
+
+        <div class="two-col">
+          <!-- LEFT: Questions -->
+          <div>
+            <div class="progress-container">
+              <div class="progress-header">
+                <span class="progress-label">Progreso de Evaluación</span>
+                <span class="progress-count" id="q-count">1 / 15</span>
+              </div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="q-progress" style="width:0%"></div>
+              </div>
+            </div>
+
+            <div class="question-card" id="question-card">
+              <div class="question-number" id="q-number">PREGUNTA 01</div>
+              <div class="question-text" id="q-text">Cargando pregunta...</div>
+              <div class="question-weight" id="q-weight">Peso en perfil: —</div>
+              <div id="q-options"></div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:1rem">
+              <button class="btn btn-secondary" id="btn-prev-q" onclick="prevQuestion()" style="display:none">← Anterior</button>
+              <button class="btn btn-primary" id="btn-next-q" onclick="nextQuestion()">Siguiente →</button>
+            </div>
+          </div>
+
+          <!-- RIGHT: Biometric -->
+          <div>
+            <div class="biometric-panel" id="biometric-panel">
+              <div class="bio-header">
+                <span class="bio-title">🔬 Análisis Biométrico</span>
+                <span class="bio-status inactive" id="bio-panel-status">INACTIVO</span>
+              </div>
+              <div id="bio-video-container">
+                <video id="bio-video" autoplay muted playsinline></video>
+                <canvas id="bio-canvas"></canvas>
+                <div class="bio-overlay-label" id="bio-overlay-text">SIN SEÑAL</div>
+              </div>
+              <!-- El panel de Emociones está oculto para el evaluado, manteniendo la privacidad de resultados en tiempo real -->
+              <div class="emotion-display" id="emotion-display" style="display: none;">
+                <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.1em">Emociones Detectadas</div>
+                <!-- filled by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Results (NOW HIDDEN FROM APPLICANT) -->
+      <div id="eval-step-results" style="display:none">
+        <div class="section-header">
+          <span class="section-badge">Paso Final</span>
+          <h2 class="section-title">Evaluación Completada</h2>
+        </div>
+        
+        <div class="result-card" style="padding: 3rem; text-align: center;">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+          <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 1rem;">Registro Exitoso</h3>
+          <p style="color: var(--text-secondary); line-height: 1.6; max-width: 500px; margin: 0 auto;">
+            Gracias por participar en el proceso de evaluación de seguridad corporativa. Sus respuestas al test psicométrico y el registro biométrico han sido cifrados, procesados y guardados de forma segura en la base de datos de administración.
+            <br><br>
+            El área encargada del proceso de selección revisará detalladamente estos resultados y se pondrá en contacto con usted para informarle los siguientes pasos.
+          </p>
+        </div>
+
+        <div style="display:flex;justify-content:center;margin-top:2rem;">
+          <button class="btn btn-primary" onclick="resetEval(); showView('home');">Finalizar y Volver al Inicio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       VIEW: ADMIN
+  ══════════════════════════════════════════ -->
+  <div id="view-admin" class="view">
+
+    <!-- LOGIN OVERLAY -->
+    <div class="login-overlay" id="admin-login-overlay">
+      <div class="login-box">
+        <div class="login-title">🔐 Acceso Restringido</div>
+        <div class="login-sub">Panel de Administración SPC-100</div>
+        <div class="login-error" id="login-error">Credenciales incorrectas. Intente nuevamente.</div>
+        <div class="form-group" style="margin-bottom:1rem">
+          <label>Usuario</label>
+          <input type="text" id="login-user" placeholder="usuario">
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem">
+          <label>Contraseña</label>
+          <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Ingresar</button>
+      </div>
+    </div>
+
+    <!-- ADMIN CONTENT -->
+    <div style="max-width:1200px;margin:0 auto;padding:2rem">
+      <div class="section-header">
+        <span class="section-badge">Administración</span>
+        <h2 class="section-title">Panel de Control</h2>
+        <div style="margin-left:auto">
+          <button class="btn btn-secondary btn-sm" onclick="doLogout()">Cerrar Sesión</button>
+        </div>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('historial')">📊 Historial</button>
+        <button class="admin-tab" onclick="switchAdminTab('baterias')">📋 Baterías de Preguntas</button>
+        <button class="admin-tab" onclick="switchAdminTab('configuracion')">⚙️ Configuración</button>
+      </div>
+
+      <!-- TAB: HISTORIAL -->
+      <div id="admin-historial" class="admin-panel active">
+        <div class="filter-bar">
+          <select id="filter-perfil" onchange="renderHistorial()">
+            <option value="">Todos los perfiles</option>
+            <option value="guardia_estandar">Guardia Estándar</option>
+            <option value="guardia_tactico">Guardia Táctico</option>
+            <option value="jefe_grupo">Jefe de Grupo</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="jefe_seguridad">Jefe de Seguridad</option>
+            <option value="administrador_contrato">Administrador de Contrato</option>
+          </select>
+          <select id="filter-resultado" onchange="renderHistorial()">
+            <option value="">Todos los resultados</option>
+            <option value="recomendado">Recomendado</option>
+            <option value="riesgoso">Contratación Riesgosa</option>
+            <option value="no_recomendado">No Recomendado</option>
+          </select>
+          <input type="date" id="filter-desde" onchange="renderHistorial()" placeholder="Desde">
+          <input type="date" id="filter-hasta" onchange="renderHistorial()" placeholder="Hasta">
+          <button class="btn btn-danger btn-sm" onclick="clearFilters()">✕ Limpiar</button>
+        </div>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>N°</th>
+                <th>Nombre</th>
+                <th>Cargo</th>
+                <th>Fecha</th>
+                <th>Test</th>
+                <th>Biométrico</th>
+                <th>Final</th>
+                <th>Resultado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="historial-tbody">
+              <tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:2rem">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: BATERIAS -->
+      <div id="admin-baterias" class="admin-panel">
+        <div class="profile-selector-admin" id="profile-selector-admin">
+          <!-- filled by JS -->
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted)" id="q-count-label">— preguntas en batería</div>
+          <button class="btn btn-primary btn-sm" onclick="toggleAddQForm()">+ Agregar Pregunta</button>
+        </div>
+
+        <!-- ADD QUESTION FORM -->
+        <div class="add-q-form" id="add-q-form">
+          <div style="font-family:var(--font-display);font-size:1rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem">Nueva Pregunta</div>
+          <div class="form-group" style="margin-bottom:1rem">
+            <label>Texto de la Pregunta</label>
+            <textarea id="nq-text" rows="3" placeholder="Ingrese el enunciado de la pregunta..."></textarea>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Tipo de Respuesta</label>
+              <select id="nq-type" onchange="updateNewQOptions()">
+                <option value="likert">Escala Likert (1–5)</option>
+                <option value="multiple">Opción Múltiple</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Peso en Perfil (%) *</label>
+              <input type="number" id="nq-weight" min="0.1" max="20" step="0.1" value="6.67" placeholder="Ej: 6.67">
+            </div>
+          </div>
+          <div id="nq-options-section" style="margin-top:1rem;display:none">
+            <label style="display:block;margin-bottom:0.5rem">Opciones de Respuesta</label>
+            <div class="options-list" id="nq-options-list">
+              <div class="option-item">
+                <input type="text" placeholder="Opción (valor 1)">
+                <input type="number" placeholder="Valor" min="1" max="5" style="width:80px">
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" style="margin-top:0.5rem" onclick="addOptionField()">+ Opción</button>
+          </div>
+          <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1rem">
+            <button class="btn btn-secondary btn-sm" onclick="toggleAddQForm()">Cancelar</button>
+            <button class="btn btn-primary btn-sm" onclick="saveNewQuestion()">Guardar Pregunta</button>
+          </div>
+        </div>
+
+        <div id="questions-list">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- TAB: CONFIG -->
+      <div id="admin-configuracion" class="admin-panel">
+        <div class="form-card">
+          <div class="form-card-title">⚙️ Parámetros del Sistema</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Umbral Recomendado (%)</label>
+              <input type="number" id="cfg-umbral-rec" value="70">
+            </div>
+            <div class="form-group">
+              <label>Umbral Riesgoso (%)</label>
+              <input type="number" id="cfg-umbral-risk" value="50">
+            </div>
+            <div class="form-group">
+              <label>Peso Componente Biométrico (%)</label>
+              <input type="number" id="cfg-bio-weight" value="20">
+            </div>
+            <div class="form-group">
+              <label>Intervalo Captura Biométrica (seg)</label>
+              <input type="number" id="cfg-bio-interval" value="10">
+            </div>
+          </div>
+          <div style="margin-top:1rem">
+            <button class="btn btn-primary" onclick="saveConfig()">Guardar Configuración</button>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-title">🗄️ Gestión de Datos</div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap">
+            <button class="btn btn-secondary" onclick="exportData()">⬇ Exportar Datos JSON</button>
+            <button class="btn btn-danger" onclick="clearAllData()">🗑️ Eliminar Todo el Historial</button>
+            <button class="btn btn-secondary" onclick="reloadSampleData()">🔄 Recargar Datos de Muestra</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── MODAL: REPORT DETAIL ─── -->
+<div class="modal-overlay" id="report-modal" style="display:none">
+  <div class="modal-box" style="max-width:800px">
+    <div class="modal-header">
+      <div class="modal-title">Informe de Evaluación</div>
+      <button class="modal-close" onclick="closeModal('report-modal')">×</button>
+    </div>
+    <div id="report-modal-content"></div>
+    <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.5rem">
+      <button class="btn btn-secondary" onclick="closeModal('report-modal')">Cerrar</button>
+      <button class="btn btn-primary" id="btn-dl-from-modal">⬇ Descargar PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MAIN SCRIPT ─── -->
+<script>
+// ================================================================
+// CONSTANTS
+// ================================================================
+const PROFILES = {
+  guardia_estandar: 'Guardia Estándar',
+  guardia_tactico: 'Guardia Táctico',
+  jefe_grupo: 'Jefe de Grupo',
+  supervisor: 'Supervisor',
+  jefe_seguridad: 'Jefe de Seguridad',
+  administrador_contrato: 'Administrador de Contrato'
+};
+
+const PROFILE_DESCRIPTIONS = {
+  guardia_estandar: 'Evaluación enfocada en integridad, obediencia a protocolos y capacidad de respuesta básica.',
+  guardia_tactico: 'Evaluación con énfasis en manejo de situaciones de riesgo, respuesta física y control emocional bajo presión.',
+  jefe_grupo: 'Evaluación de habilidades de liderazgo operativo, coordinación de equipos y toma de decisiones en campo.',
+  supervisor: 'Evaluación de competencias de supervisión, gestión de personal y criterio estratégico.',
+  jefe_seguridad: 'Evaluación integral de liderazgo, planificación estratégica, manejo de crisis y toma de decisiones de alto impacto.',
+  administrador_contrato: 'Evaluación de competencias administrativas, gestión de contratos, negociación y cumplimiento normativo.'
+};
+
+const EMOTIONS = ['neutral','happy','sad','angry','surprised','fearful','disgusted'];
+const EMOTION_LABELS = {
+  neutral: 'Neutral', happy: 'Feliz', sad: 'Triste',
+  angry: 'Enojado', surprised: 'Sorprendido', fearful: 'Temeroso', disgusted: 'Disgustado'
+};
+const EMOTION_COLORS = {
+  neutral: '#94a3b8', happy: '#10b981', sad: '#6366f1',
+  angry: '#ef4444', surprised: '#f59e0b', fearful: '#f97316', disgusted: '#8b5cf6'
+};
+const ALERT_EMOTIONS = ['angry','fearful','disgusted'];
+
+// ================================================================
+// STATE
+// ================================================================
+let currentView = 'home';
+let adminLoggedIn = false;
+let currentAdminProfile = 'guardia_estandar';
+
+// Evaluation state
+let evalState = {
+  postulant: null,
+  questions: [],
+  currentQ: 0,
+  answers: [],
+  bioLog: [],
+  bioEnabled: false,
+  bioStream: null,
+  bioInterval: null,
+  bioDetectionInterval: null,
+  faceApiLoaded: false,
+  startTime: null
+};
+
+// ================================================================
+// LOCAL STORAGE HELPERS
+// ================================================================
+function lsGet(key, def) {
+  try { const v = localStorage.getItem('spc100_'+key); return v ? JSON.parse(v) : def; }
+  catch(e) { return def; }
+}
+
+function lsSet(key, val) {
+  localStorage.setItem('spc100_'+key, JSON.stringify(val));
+}
+
+// ================================================================
+// SAMPLE DATA
+// ================================================================
+function generateSampleQuestions() {
+  const base = [
+    // Integridad
+    { id:'q1', text:'¿Cómo reaccionaría si descubre que un compañero sustrae bienes del cliente?', type:'multiple', options:[
+      {text:'Lo ignoro para evitar conflictos',val:1},{text:'Lo confronto directamente pero no lo reporto',val:2},
+      {text:'Reporto al supervisor inmediato',val:4},{text:'Reporto formalmente siguiendo el protocolo establecido',val:5}
+    ]},
+    { id:'q2', text:'Ante una situación ambigua donde el reglamento no es claro, usted:', type:'multiple', options:[
+      {text:'Actúo según mi criterio personal',val:2},{text:'Espero instrucciones sin actuar',val:3},
+      {text:'Consulto con mi supervisor antes de actuar',val:5},{text:'Resuelvo rápido sin consultar',val:2}
+    ]},
+    { id:'q3', text:'¿Con qué frecuencia siente la necesidad de incumplir normas para lograr resultados?', type:'likert'},
+    // Manejo del estrés
+    { id:'q4', text:'Durante situaciones de alta presión operativa, su nivel de control emocional es:', type:'likert'},
+    { id:'q5', text:'Cuando enfrenta múltiples emergencias simultáneas, usted:', type:'multiple', options:[
+      {text:'Se paraliza y espera refuerzos',val:1},{text:'Prioriza por intuición sin protocolo',val:2},
+      {text:'Aplica protocolos de priorización y solicita apoyo',val:5},{text:'Actúa en todas a la vez',val:2}
+    ]},
+    { id:'q6', text:'Su capacidad para recuperarse emocionalmente después de un incidente crítico es:', type:'likert'},
+    // Respuesta ante amenazas
+    { id:'q7', text:'Al detectar un individuo con comportamiento sospechoso, usted:', type:'multiple', options:[
+      {text:'Lo confronta físicamente de inmediato',val:1},{text:'Observa y reporta sin intervenir',val:4},
+      {text:'Activa protocolo de seguimiento y alerta',val:5},{text:'Ignora si no hay certeza',val:2}
+    ]},
+    { id:'q8', text:'Ante una amenaza directa de violencia, su primera acción es:', type:'multiple', options:[
+      {text:'Usar fuerza máxima disponible',val:1},{text:'Intentar desescalar verbalmente',val:4},
+      {text:'Aplicar protocolo de contención proporcional',val:5},{text:'Retirarse y esperar',val:2}
+    ]},
+    { id:'q9', text:'Su nivel de capacitación en primeros auxilios y respuesta a emergencias es:', type:'likert'},
+    // Trabajo en equipo
+    { id:'q10', text:'En operativos grupales, su rol preferido es:', type:'multiple', options:[
+      {text:'Actuar de forma independiente',val:1},{text:'Seguir instrucciones del equipo',val:4},
+      {text:'Colaborar activamente y coordinar',val:5},{text:'Delegar en otros',val:2}
+    ]},
+    { id:'q11', text:'¿Qué tan fácilmente adapta su estilo de trabajo a distintos compañeros?', type:'likert'},
+    { id:'q12', text:'Ante un conflicto interpersonal en el equipo, usted:', type:'multiple', options:[
+      {text:'Lo ignora para mantener la paz',val:2},{text:'Escala al supervisor directamente',val:3},
+      {text:'Busca resolución directa y constructiva',val:5},{text:'Toma partido por quien le parece correcto',val:2}
+    ]},
+    // Liderazgo
+    { id:'q13', text:'¿Con qué frecuencia toma iniciativa sin esperar instrucciones?', type:'likert'},
+    { id:'q14', text:'Su experiencia en conducción de equipos de trabajo es:', type:'likert'},
+    // Toma de decisiones
+    { id:'q15', text:'Al tomar decisiones bajo presión de tiempo, su enfoque principal es:', type:'multiple', options:[
+      {text:'Consultar siempre antes de actuar',val:2},{text:'Actuar por instinto inmediato',val:2},
+      {text:'Evaluar rápidamente opciones y decidir',val:5},{text:'Esperar que la situación se resuelva sola',val:1}
+    ]},
+    { id:'q16', text:'Su capacidad de análisis lógico ante situaciones complejas es:', type:'likert'},
+    { id:'q17', text:'Al cometer un error operativo, usted:', type:'multiple', options:[
+      {text:'Lo oculta para evitar consecuencias',val:1},{text:'Lo minimiza en el reporte',val:2},
+      {text:'Lo reporta de forma transparente y propone mejora',val:5},{text:'Culpa a factores externos',val:1}
+    ]}
+  ];
+
+  // Weights per profile (must sum ~100 per profile)
+  const weights = {
+    guardia_estandar:      [8,7,8, 7,6,5, 8,7,6, 6,5,5, 4,3, 6,5,5],
+    guardia_tactico:       [6,5,5, 9,8,8, 10,10,7, 5,4,4, 4,4, 6,5,5],
+    jefe_grupo:            [7,6,5, 7,7,6, 8,8,5, 9,8,8, 6,5, 5,5,5],
+    supervisor:            [7,6,5, 6,6,5, 6,6,4, 8,7,7, 9,8, 6,6,6],
+    jefe_seguridad:        [7,6,5, 6,6,5, 7,7,4, 7,6,6, 10,9, 6,7,6],
+    administrador_contrato:[9,8,7, 4,4,4, 5,5,4, 8,7,7, 9,8, 6,5,7]
+  };
+
+  const result = {};
+  Object.keys(weights).forEach(profile => {
+    result[profile] = base.map((q, i) => ({
+      ...JSON.parse(JSON.stringify(q)),
+      id: q.id + '_' + profile,
+      weight: weights[profile][i] || 5
+    }));
+  });
+  return result;
+}
+
+function generateSampleEvals() {
+  return [
+    {
+      id: 'eval_001',
+      correlativo: 1,
+      fecha: '2025-03-15',
+      postulant: {nombre:'Carlos Muñoz Vega', rut:'15.234.567-8', edad:29, email:'cmunoz@mail.com', tel:'+56912345678', cargo:'guardia_tactico'},
+      scoreTest: 78.4,
+      scoreBio: 82.1,
+      scoreFinal: 79.1,
+      bioEnabled: true,
+      bioLog: [
+        {ts:'00:10',q:1,emotion:'neutral',conf:78},{ts:'00:20',q:2,emotion:'neutral',conf:82},
+        {ts:'00:30',q:3,emotion:'happy',conf:65},{ts:'00:40',q:4,emotion:'neutral',conf:88},
+        {ts:'00:50',q:5,emotion:'neutral',conf:71}
+      ],
+      bioMetrics:{predominant:'neutral',variability:15,alertPct:5},
+      answers:[],
+      resultado:'recomendado',
+      narrative:'El postulante demuestra un perfil psicométrico sólido para el cargo de Guardia Táctico. Presenta buena capacidad de respuesta ante situaciones de riesgo y control emocional adecuado. El análisis biométrico refuerza estas conclusiones con predominancia de expresiones neutras durante todo el test.'
+    },
+    {
+      id: 'eval_002',
+      correlativo: 2,
+      fecha: '2025-03-18',
+      postulant: {nombre:'María Fernández Torres', rut:'13.876.543-2', edad:34, email:'mftorres@mail.com', tel:'+56987654321', cargo:'supervisor'},
+      scoreTest: 62.3,
+      scoreBio: 55.0,
+      scoreFinal: 60.8,
+      bioEnabled: true,
+      bioLog: [
+        {ts:'00:10',q:1,emotion:'neutral',conf:60},{ts:'00:20',q:2,emotion:'fearful',conf:45},
+        {ts:'00:30',q:3,emotion:'neutral',conf:70},{ts:'00:40',q:4,emotion:'angry',conf:38},
+        {ts:'00:50',q:5,emotion:'neutral',conf:65}
+      ],
+      bioMetrics:{predominant:'neutral',variability:35,alertPct:25},
+      answers:[],
+      resultado:'riesgoso',
+      narrative:'La postulante presenta competencias de supervisión parcialmente desarrolladas. El test psicométrico arroja puntajes en el rango medio, con debilidades identificadas en manejo del estrés y toma de decisiones bajo presión. El análisis biométrico muestra presencia de emociones de alerta durante preguntas críticas, lo que sugiere estrés situacional elevado.'
+    },
+    {
+      id: 'eval_003',
+      correlativo: 3,
+      fecha: '2025-03-20',
+      postulant: {nombre:'Roberto Sánchez Díaz', rut:'11.456.789-3', edad:22, email:'rsanchez@mail.com', tel:'+56911223344', cargo:'guardia_estandar'},
+      scoreTest: 38.7,
+      scoreBio: 40.0,
+      scoreFinal: 39.1,
+      bioEnabled: false,
+      bioLog: [],
+      bioMetrics:null,
+      answers:[],
+      resultado:'no_recomendado',
+      narrative:'El postulante no alcanza los umbrales mínimos requeridos para el cargo de Guardia Estándar. Los resultados del test psicométrico revelan debilidades significativas en integridad, seguimiento de protocolos y manejo de situaciones de estrés. La evaluación biométrica no pudo realizarse por indisponibilidad de cámara.'
+    }
+  ];
+}
+
+// ================================================================
+// INIT
+// ================================================================
+function initApp() {
+  // Set date
+  document.getElementById('reg-fecha').value = new Date().toLocaleDateString('es-CL', {
+    year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+
+  // Load or init data
+  if (!lsGet('initialized', false)) {
+    lsSet('questions', generateSampleQuestions());
+    lsSet('evaluations', generateSampleEvals());
+    lsSet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:10});
+    lsSet('correlativo', 4);
+    lsSet('initialized', true);
+  }
+
+  loadConfig();
+  renderEmotionDisplay({});
+}
+
+function loadConfig() {
+  const cfg = lsGet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:10});
+  const r1 = document.getElementById('cfg-umbral-rec');
+  const r2 = document.getElementById('cfg-umbral-rsk');
+  const r3 = document.getElementById('cfg-bio-weight');
+  const r4 = document.getElementById('cfg-bio-interval');
+  if(r1) r1.value = cfg.umbraRec||70;
+  if(r3) r3.value = cfg.bioWeight||20;
+  if(r4) r4.value = cfg.bioInterval||10;
+}
+
+// ================================================================
+// NAVIGATION
+// ================================================================
+function showView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  ['home','eval','admin'].forEach((v,i) => { if(v===view) btns[i].classList.add('active'); });
+  currentView = view;
+
+  if(view === 'admin') {
+    if(!adminLoggedIn) {
+      document.getElementById('admin-login-overlay').style.display = 'flex';
+    } else {
+      document.getElementById('admin-login-overlay').style.display = 'none';
+      renderHistorial();
+      renderBateriasAdmin();
+    }
+  }
+  window.scrollTo(0,0);
+}
+
+// ================================================================
+// LOGIN
+// ================================================================
+function doLogin() {
+  const user = document.getElementById('login-user').value;
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+
+  if(user === 'adminsec' && pass === 'admin2026') {
+    adminLoggedIn = true;
+    document.getElementById('admin-login-overlay').style.display = 'none';
+    renderHistorial();
+    renderBateriasAdmin();
+    showToast('✅ Sesión iniciada correctamente');
+  } else {
+    err.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+  }
+}
+
+function doLogout() {
+  adminLoggedIn = false;
+  document.getElementById('admin-login-overlay').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  showToast('Sesión cerrada');
+}
+
+// ================================================================
+// EVALUATION FLOW
+// ================================================================
+function onCargoChange() {
+  const cargo = document.getElementById('reg-cargo').value;
+  const info = document.getElementById('cargo-info');
+  const infoText = document.getElementById('cargo-info-text');
+  if(cargo && PROFILE_DESCRIPTIONS[cargo]) {
+    infoText.textContent = PROFILE_DESCRIPTIONS[cargo];
+    info.style.display = 'flex';
+  } else {
+    info.style.display = 'none';
+  }
+}
+
+function startEval() {
+  const nombre = document.getElementById('reg-nombre').value.trim();
+  const rut = document.getElementById('reg-rut').value.trim();
+  const edad = document.getElementById('reg-edad').value;
+  const cargo = document.getElementById('reg-cargo').value;
+
+  if(!nombre || !rut || !edad || !cargo) {
+    showToast('⚠️ Complete los campos obligatorios marcados con *');
+    return;
+  }
+
+  evalState.postulant = {
+    nombre, rut, edad: parseInt(edad),
+    fnac: document.getElementById('reg-fnac').value,
+    email: document.getElementById('reg-email').value,
+    tel: document.getElementById('reg-tel').value,
+    cargo
+  };
+
+  // Load questions
+  const allQ = lsGet('questions', generateSampleQuestions());
+  evalState.questions = allQ[cargo] || [];
+  if(evalState.questions.length === 0) {
+    showToast('⚠️ No hay preguntas configuradas para este perfil');
+    return;
+  }
+
+  evalState.currentQ = 0;
+  evalState.answers = new Array(evalState.questions.length).fill(null);
+  evalState.bioLog = [];
+  evalState.bioEnabled = false;
+  evalState.startTime = new Date();
+
+  // Show bio step
+  document.getElementById('eval-step-register').style.display = 'none';
+  document.getElementById('eval-step-bio').style.display = 'block';
+  initBiometricStep();
+}
+
+async function initBiometricStep() {
+  const initStatus = document.getElementById('bio-init-status');
+  const initText = document.getElementById('bio-init-text');
+
+  // Try to load face-api models
+  try {
+    if(typeof faceapi !== 'undefined') {
+      initText.textContent = 'Cargando modelo de detección facial...';
+      const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights';
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+      ]);
+      evalState.faceApiLoaded = true;
+      initStatus.style.display = 'none';
+      initText.textContent = 'Modelos cargados correctamente. Por favor, active su cámara.';
+      document.getElementById('btn-enable-cam').style.display = 'inline-flex';
+    } else {
+      throw new Error('Face API not available');
+    }
+  } catch(e) {
+    initStatus.style.display = 'none';
+    initText.textContent = 'Error: Análisis facial no disponible. Verifique su conexión.';
+  }
+}
+
+async function enableCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({video: true});
+    evalState.bioStream = stream;
+    evalState.bioEnabled = true;
+    document.getElementById('eval-step-bio').style.display = 'none';
+    showTestStep();
+  } catch(e) {
+    showToast('⚠️ Acceso a la cámara denegado. Es obligatorio habilitarla para continuar con la evaluación.');
+  }
+}
+
+function showTestStep() {
+  document.getElementById('eval-step-bio').style.display = 'none';
+  document.getElementById('eval-step-test').style.display = 'block';
+
+  if(evalState.bioEnabled && evalState.bioStream) {
+    const video = document.getElementById('bio-video');
+    video.srcObject = evalState.bioStream;
+    document.getElementById('bio-panel-status').textContent = 'ACTIVO';
+    document.getElementById('bio-panel-status').className = 'bio-status active';
+    document.getElementById('bio-overlay-text').textContent = 'ANALIZANDO';
+    startBioDetection();
+  } else {
+    document.getElementById('bio-panel-status').textContent = 'INACTIVO';
+    document.getElementById('bio-overlay-text').textContent = 'SIN CÁMARA';
+  }
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = evalState.questions[evalState.currentQ];
+  const total = evalState.questions.length;
+  const idx = evalState.currentQ;
+
+  document.getElementById('q-count').textContent = `${idx+1} / ${total}`;
+  document.getElementById('q-progress').style.width = `${((idx+1)/total)*100}%`;
+  document.getElementById('q-number').textContent = `PREGUNTA ${String(idx+1).padStart(2,'0')}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-weight').textContent = `Peso en perfil: ${q.weight}%`;
+  document.getElementById('btn-prev-q').style.display = idx > 0 ? 'inline-flex' : 'none';
+  document.getElementById('btn-next-q').textContent = idx === total-1 ? 'Finalizar Evaluación ✓' : 'Siguiente →';
+
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+
+  const saved = evalState.answers[idx];
+
+  if(q.type === 'likert') {
+    const labels = ['Nunca / Nada','Pocas veces / Poco','A veces / Regular','Frecuentemente / Bastante','Siempre / Mucho'];
+    const cont = document.createElement('div');
+    cont.className = 'likert-container';
+    for(let i=1;i<=5;i++) {
+      const div = document.createElement('div');
+      div.className = 'likert-option';
+      div.innerHTML = `
+        <input type="radio" name="likert_q" id="l${i}" value="${i}" ${saved==i?'checked':''}>
+        <label for="l${i}"><span class="likert-value">${i}</span><span>${labels[i-1]}</span></label>
+      `;
+      cont.appendChild(div);
+    }
+    opts.appendChild(cont);
+  } else {
+    const cont = document.createElement('div');
+    cont.className = 'mc-options';
+    (q.options||[]).forEach((opt,oi) => {
+      const div = document.createElement('div');
+      div.className = 'mc-option' + (saved===oi?' selected':'');
+      div.innerHTML = `
+        <div class="mc-indicator"></div>
+        <span class="mc-label">${opt.text}</span>
+      `;
+      div.onclick = () => {
+        cont.querySelectorAll('.mc-option').forEach(el => el.classList.remove('selected'));
+        div.classList.add('selected');
+        evalState.answers[idx] = oi;
+      };
+      cont.appendChild(div);
+    });
+    opts.appendChild(cont);
+  }
+}
+
+function nextQuestion() {
+  // Capture answer
+  const q = evalState.questions[evalState.currentQ];
+  if(q.type === 'likert') {
+    const sel = document.querySelector('input[name="likert_q"]:checked');
+    if(!sel) { showToast('⚠️ Seleccione una respuesta para continuar'); return; }
+    evalState.answers[evalState.currentQ] = parseInt(sel.value);
+  } else {
+    if(evalState.answers[evalState.currentQ] === null) {
+      showToast('⚠️ Seleccione una opción para continuar'); return;
+    }
+  }
+
+  // Log biometric for this question
+  logBioForQuestion(evalState.currentQ);
+
+  if(evalState.currentQ < evalState.questions.length - 1) {
+    evalState.currentQ++;
+    renderQuestion();
+  } else {
+    finishEval();
+  }
+}
+
+function prevQuestion() {
+  if(evalState.currentQ > 0) {
+    evalState.currentQ--;
+    renderQuestion();
+  }
+}
+
+// ================================================================
+// BIOMETRIC DETECTION
+// ================================================================
+let lastEmotions = {};
+
+async function startBioDetection() {
+  if(!evalState.faceApiLoaded) return;
+  const video = document.getElementById('bio-video');
+  const canvas = document.getElementById('bio-canvas');
+
+  const detectFace = async () => {
+    if(!evalState.bioEnabled) return;
+    try {
+      const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      if(detections && detections.length > 0) {
+        const det = detections[0];
+        lastEmotions = det.expressions;
+        renderEmotionDisplay(lastEmotions);
+
+        // Draw detection box
+        const dims = faceapi.matchDimensions(canvas, video, true);
+        const resized = faceapi.resizeResults(det, dims);
+        const box = resized.detection.box;
+        ctx.strokeStyle = '#1d4ed8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+
+        document.getElementById('bio-overlay-text').textContent = 'DETECTANDO';
+      } else {
+        document.getElementById('bio-overlay-text').textContent = 'BUSCANDO ROSTRO';
+      }
+    } catch(e) {}
+  };
+
+  evalState.bioDetectionInterval = setInterval(detectFace, 500);
+
+  // Log every N seconds
+  const cfg = lsGet('config', {bioInterval:10});
+  const interval = (cfg.bioInterval || 10) * 1000;
+  evalState.bioInterval = setInterval(() => {
+    logBioEntry();
+  }, interval);
+}
+
+function logBioEntry() {
+  if(!evalState.bioEnabled || Object.keys(lastEmotions).length === 0) return;
+  const dominant = Object.entries(lastEmotions).sort((a,b) => b[1]-a[1])[0];
+  const elapsed = Math.floor((new Date() - evalState.startTime) / 1000);
+  const mm = String(Math.floor(elapsed/60)).padStart(2,'0');
+  const ss = String(elapsed%60).padStart(2,'0');
+
+  evalState.bioLog.push({
+    ts: `${mm}:${ss}`,
+    q: evalState.currentQ + 1,
+    emotion: dominant[0],
+    conf: Math.round(dominant[1]*100)
+  });
+}
+
+function logBioForQuestion(qIdx) {
+  if(!evalState.bioEnabled || Object.keys(lastEmotions).length === 0) return;
+  const dominant = Object.entries(lastEmotions).sort((a,b) => b[1]-a[1])[0];
+  const elapsed = Math.floor((new Date() - evalState.startTime) / 1000);
+  const mm = String(Math.floor(elapsed/60)).padStart(2,'0');
+  const ss = String(elapsed%60).padStart(2,'0');
+
+  // Only add if not duplicate ts
+  evalState.bioLog.push({
+    ts: `${mm}:${ss}`,
+    q: qIdx + 1,
+    emotion: dominant[0],
+    conf: Math.round(dominant[1]*100)
+  });
+}
+
+function stopBioDetection() {
+  if(evalState.bioInterval) { clearInterval(evalState.bioInterval); evalState.bioInterval = null; }
+  if(evalState.bioDetectionInterval) { clearInterval(evalState.bioDetectionInterval); evalState.bioDetectionInterval = null; }
+  if(evalState.bioStream) {
+    evalState.bioStream.getTracks().forEach(t => t.stop());
+    evalState.bioStream = null;
+  }
+}
+
+function renderEmotionDisplay(emotions) {
+  const cont = document.getElementById('emotion-display');
+  if(!cont) return;
+  // Keep header
+  let html = '<div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.1em">Emociones Detectadas</div>';
+  EMOTIONS.forEach(e => {
+    const val = emotions[e] ? Math.round(emotions[e]*100) : 0;
+    html += `
+      <div class="emotion-row">
+        <span class="emotion-name">${EMOTION_LABELS[e]}</span>
+        <div class="emotion-bar-track">
+          <div class="emotion-bar-fill" style="width:${val}%;background:${EMOTION_COLORS[e]}"></div>
+        </div>
+        <span class="emotion-pct">${val}%</span>
+      </div>
+    `;
+  });
+  cont.innerHTML = html;
+}
+
+// ================================================================
+// FINISH EVALUATION
+// ================================================================
+function finishEval() {
+  stopBioDetection();
+
+  // Calculate test score
+  const questions = evalState.questions;
+  let totalWeight = 0, earnedScore = 0;
+
+  questions.forEach((q, i) => {
+    const ans = evalState.answers[i];
+    const weight = q.weight || 5;
+    totalWeight += weight;
+
+    if(q.type === 'likert') {
+      if(ans !== null) earnedScore += (ans / 5) * weight;
+    } else {
+      if(ans !== null && q.options && q.options[ans]) {
+        earnedScore += (q.options[ans].val / 5) * weight;
+      }
+    }
+  });
+
+  const scoreTest = totalWeight > 0 ? (earnedScore / totalWeight) * 100 : 0;
+
+  // Calculate bio score
+  let scoreBio = null;
+  let bioMetrics = null;
+  if(evalState.bioEnabled && evalState.bioLog.length > 0) {
+    const log = evalState.bioLog;
+    const total = log.length;
+    const emoCounts = {};
+    EMOTIONS.forEach(e => emoCounts[e] = 0);
+    log.forEach(entry => { emoCounts[entry.emotion] = (emoCounts[entry.emotion]||0) + 1; });
+
+    const alertCount = ALERT_EMOTIONS.reduce((acc,e) => acc + (emoCounts[e]||0), 0);
+    const neutralPositive = (emoCounts.neutral||0) + (emoCounts.happy||0);
+    const alertPct = total > 0 ? (alertCount/total)*100 : 0;
+    const neutralPct = total > 0 ? (neutralPositive/total)*100 : 0;
+
+    // Unique emotion types used
+    const uniqueEmotions = Object.values(emoCounts).filter(v=>v>0).length;
+    const variability = Math.round((uniqueEmotions / EMOTIONS.length) * 100);
+
+    // Score: neutral/positive is good, alert is penalized
+    scoreBio = Math.max(0, Math.min(100, neutralPct * 0.8 + (100 - alertPct) * 0.2));
+
+    const predominant = Object.entries(emoCounts).sort((a,b)=>b[1]-a[1])[0][0];
+    bioMetrics = { predominant, variability, alertPct: Math.round(alertPct) };
+  }
+
+  // Final score
+  const cfg = lsGet('config', {bioWeight:20});
+  const bioWeight = cfg.bioWeight || 20;
+  const testWeight = 100 - bioWeight;
+
+  let scoreFinal;
+  if(scoreBio !== null) {
+    scoreFinal = (scoreTest * testWeight/100) + (scoreBio * bioWeight/100);
+  } else {
+    scoreFinal = scoreTest;
+  }
+
+  // Determine result
+  const cfg2 = lsGet('config', {umbraRec:70, umbralRisk:50});
+  const umbralRec = cfg2.umbraRec || 70;
+  const umbralRisk = cfg2.umbralRisk || 50;
+
+  let resultado;
+  if(scoreFinal >= umbralRec) {
+    resultado = 'recomendado';
+  } else if(scoreFinal >= umbralRisk) {
+    resultado = 'riesgoso';
+  } else {
+    resultado = 'no_recomendado';
+  }
+
+  // Generate narrative
+  const narrative = generateNarrative(evalState.postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics);
+
+  // Save to history
+  const correlativo = lsGet('correlativo', 1);
+  const evalRecord = {
+    id: 'eval_' + Date.now(),
+    correlativo,
+    fecha: new Date().toISOString().split('T')[0],
+    postulant: evalState.postulant,
+    scoreTest: Math.round(scoreTest*10)/10,
+    scoreBio: scoreBio !== null ? Math.round(scoreBio*10)/10 : null,
+    scoreFinal: Math.round(scoreFinal*10)/10,
+    bioEnabled: evalState.bioEnabled,
+    bioLog: evalState.bioLog,
+    bioMetrics,
+    answers: evalState.answers,
+    resultado,
+    narrative,
+    questions: evalState.questions
+  };
+
+  const evals = lsGet('evaluations', []);
+  evals.unshift(evalRecord);
+  lsSet('evaluations', evals);
+  lsSet('correlativo', correlativo + 1);
+
+  // Store last eval for PDF (Solo uso de sistema para modal administrativo)
+  window._lastEval = evalRecord;
+
+  // Cambia la vista del Test a la vista final sin revelar puntajes
+  document.getElementById('eval-step-test').style.display = 'none';
+  document.getElementById('eval-step-results').style.display = 'block';
+
+  window.scrollTo(0,0);
+}
+
+function generateNarrative(postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics) {
+  const cargoName = PROFILES[postulant.cargo] || postulant.cargo;
+  let text = `<strong>${postulant.nombre}</strong> fue evaluado/a para el cargo de <strong>${cargoName}</strong> mediante la plataforma SPC-100. `;
+
+  if(resultado === 'recomendado') {
+    text += `El perfil psicométrico del postulante es sólido y coherente con los requerimientos del cargo. `;
+  } else if(resultado === 'riesgoso') {
+    text += `El perfil psicométrico del postulante presenta áreas de mejora relevantes para el cargo postulado. Se sugiere evaluación adicional antes de tomar una decisión de contratación definitiva. `;
+  } else {
+    text += `El perfil psicométrico del postulante no alcanza los estándares mínimos requeridos para el cargo de ${cargoName}. `;
+  }
+
+  text += `El puntaje del test psicométrico fue de <strong>${Math.round(scoreTest)}%</strong>. `;
+
+  if(scoreBio !== null && bioMetrics) {
+    text += `El componente biométrico aportó un puntaje de <strong>${Math.round(scoreBio)}%</strong>. `;
+    if(bioMetrics.alertPct > 30) {
+      text += `El análisis biométrico detectó una presencia significativa de emociones de alerta (${bioMetrics.alertPct}% del tiempo), incluyendo expresiones de miedo o tensión durante preguntas de manejo de riesgo, lo que podría indicar alta susceptibilidad al estrés operativo. `;
+    } else if(bioMetrics.alertPct > 10) {
+      text += `El análisis biométrico detectó presencia moderada de emociones de alerta (${bioMetrics.alertPct}%), sugiriendo estrés situacional acotado. `;
+    } else {
+      text += `El análisis biométrico mostró predominancia de expresiones neutras y positivas, lo que refuerza la estabilidad emocional del postulante. `;
+    }
+  } else {
+    text += `La evaluación se realizó sin componente biométrico (cámara no disponible); el informe se califica en base al test psicométrico exclusivamente. `;
+  }
+
+  text += `El puntaje final combinado es de <strong>${Math.round(scoreFinal)}%</strong>.`;
+  return text;
+}
+
+function resetEval() {
+  evalState = {
+    postulant: null, questions: [], currentQ: 0, answers: [],
+    bioLog: [], bioEnabled: false, bioStream: null,
+    bioInterval: null, bioDetectionInterval: null, faceApiLoaded: evalState.faceApiLoaded,
+    startTime: null
+  };
+
+  document.getElementById('eval-step-register').style.display = 'block';
+  document.getElementById('eval-step-bio').style.display = 'none';
+  document.getElementById('eval-step-test').style.display = 'none';
+  document.getElementById('eval-step-results').style.display = 'none';
+
+  // Reset form
+  ['reg-nombre','reg-rut','reg-edad','reg-fnac','reg-email','reg-tel'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('reg-cargo').value = '';
+  document.getElementById('reg-fecha').value = new Date().toLocaleDateString('es-CL', {
+    year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+  document.getElementById('cargo-info').style.display = 'none';
+
+  window.scrollTo(0,0);
+}
+
+// ================================================================
+// PDF REPORT (AHORA SOLO USO ADMIN)
+// ================================================================
+function downloadReport() {
+  const ev = window._lastEval;
+  if(!ev) return;
+  generatePDF(ev);
+}
+
+function generatePDF(ev) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  let y = 15;
+
+  const colors = {
+    dark: [6,10,20],
+    blue: [29,78,216],
+    steel: [148,163,184],
+    light: [241,245,249],
+    green: [16,185,129],
+    amber: [245,158,11],
+    red: [239,68,68]
+  };
+
+  // Header background
+  doc.setFillColor(...colors.dark);
+  doc.rect(0,0,W,35,'F');
+
+  // Logo text
+  doc.setFillColor(...colors.blue);
+  doc.rect(10,8,24,18,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica','bold');
+  doc.text('SPC-100', 22, 20, {align:'center'});
+
+  doc.setFontSize(11);
+  doc.setFont('helvetica','bold');
+  doc.text('SISTEMA DE EVALUACIÓN DE PERSONAL DE SEGURIDAD', 40, 15);
+  doc.setFontSize(8);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(...colors.steel);
+  doc.text(`Informe N° ${String(ev.correlativo).padStart(4,'0')} | Fecha: ${ev.fecha}`, 40, 22);
+  doc.text('DOCUMENTO CONFIDENCIAL — USO EXCLUSIVO DEL PROCESO DE SELECCIÓN', 40, 28);
+
+  y = 45;
+
+  // Postulant data section
+  doc.setFillColor(20,28,46);
+  doc.rect(10, y-5, W-20, 8, 'F');
+  doc.setTextColor(...colors.light);
+  doc.setFontSize(9);
+  doc.setFont('helvetica','bold');
+  doc.text('DATOS DEL POSTULANTE', 14, y+1);
+  y += 10;
+
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(60,60,80);
+  const pdata = [
+    ['Nombre Completo:', ev.postulant.nombre, 'RUT/DNI:', ev.postulant.rut],
+    ['Edad:', String(ev.postulant.edad)+' años', 'F. Nacimiento:', ev.postulant.fnac||'—'],
+    ['Cargo Postulado:', PROFILES[ev.postulant.cargo]||ev.postulant.cargo, 'Fecha Eval.:', ev.fecha],
+    ['Correo:', ev.postulant.email||'—', 'Teléfono:', ev.postulant.tel||'—']
+  ];
+  pdata.forEach(row => {
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(80,80,100);
+    doc.setFontSize(8);
+    doc.text(row[0], 12, y);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(40,40,60);
+    doc.text(row[1], 45, y);
+    doc.text(row[2], 100, y);
+    doc.text(row[3], 130, y);
+    y += 6;
+  });
+
+  y += 4;
+
+  // Result banner
+  let bannerColor = ev.resultado === 'recomendado' ? colors.green :
+                    ev.resultado === 'riesgoso' ? colors.amber : colors.red;
+
+  doc.setFillColor(...bannerColor);
+  doc.rect(10, y, W-20, 20, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica','bold');
+
+  const verdictMap = {
+    recomendado: '✓ SE RECOMIENDA LA CONTRATACIÓN',
+    riesgoso: '⚠ CONTRATACIÓN RIESGOSA — EVALUACIÓN ADICIONAL',
+    no_recomendado: '✗ NO SE RECOMIENDA LA CONTRATACIÓN'
+  };
+  doc.text(verdictMap[ev.resultado]||'', W/2, y+8, {align:'center'});
+  doc.setFontSize(16);
+  doc.text(`PUNTAJE FINAL: ${ev.scoreFinal}%`, W/2, y+16, {align:'center'});
+  y += 28;
+
+  // Score breakdown
+  doc.setFillColor(20,28,46);
+  doc.rect(10,y,W-20,8,'F');
+  doc.setTextColor(...colors.light);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.text('DESGLOSE DE PUNTAJES', 14, y+5);
+  y += 12;
+
+  doc.setTextColor(40,40,60);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  const scores = [
+    ['Componente Test Psicométrico (80%):', `${ev.scoreTest}%`],
+    ['Componente Biométrico (20%):', ev.scoreBio !== null ? `${ev.scoreBio}%` : 'N/A — Sin validación biométrica'],
+    ['Puntaje Final Combinado:', `${ev.scoreFinal}%`]
+  ];
+  scores.forEach(row => {
+    doc.setFont('helvetica','bold');
+    doc.text(row[0], 12, y);
+    doc.setFont('helvetica','normal');
+    doc.setFillColor(...(row[0].includes('Final') ? bannerColor : [29,78,216]));
+    doc.setTextColor(...(row[0].includes('Final') ? bannerColor : colors.blue));
+    doc.text(row[1], W-20, y, {align:'right'});
+    doc.setTextColor(40,40,60);
+    y += 7;
+  });
+
+  y += 4;
+
+  // Biometric section
+  if(ev.bioEnabled && ev.bioMetrics) {
+    doc.setFillColor(20,28,46);
+    doc.rect(10,y,W-20,8,'F');
+    doc.setTextColor(...colors.light);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.text('ANÁLISIS BIOMÉTRICO DE MICROEXPRESIONES', 14, y+5);
+    y += 12;
+
+    doc.setTextColor(40,40,60);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    const bdata = [
+      ['Emoción Predominante:', EMOTION_LABELS[ev.bioMetrics.predominant]||ev.bioMetrics.predominant],
+      ['Variabilidad Emocional:', `${ev.bioMetrics.variability}%`],
+      ['Presencia de Emociones de Alerta:', `${ev.bioMetrics.alertPct}%`],
+      ['Registros Biométricos Capturados:', String(ev.bioLog.length)]
+    ];
+    bdata.forEach(row => {
+      doc.setFont('helvetica','bold'); doc.text(row[0], 12, y);
+      doc.setFont('helvetica','normal'); doc.text(row[1], 80, y);
+      y += 6;
+    });
+
+    // Timeline excerpt
+    if(ev.bioLog.length > 0) {
+      y += 3;
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8);
+      doc.text('LOG CRONOLÓGICO (extracto):', 12, y);
+      y += 5;
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(7);
+      const maxRows = Math.min(ev.bioLog.length, 8);
+      for(let i=0;i<maxRows;i++) {
+        const entry = ev.bioLog[i];
+        doc.text(`${entry.ts} | P${entry.q} | ${EMOTION_LABELS[entry.emotion]||entry.emotion} | Confianza: ${entry.conf}%`, 14, y);
+        y += 5;
+      }
+      if(ev.bioLog.length > 8) {
+        doc.setTextColor(...colors.steel);
+        doc.text(`... y ${ev.bioLog.length - 8} registros adicionales`, 14, y);
+        y += 5;
+        doc.setTextColor(40,40,60);
+      }
+    }
+    y += 4;
+  } else if(!ev.bioEnabled) {
+    doc.setFillColor(240,240,245);
+    doc.rect(10,y,W-20,12,'F');
+    doc.setTextColor(...colors.steel);
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(9);
+    doc.text('EVALUACIÓN SIN VALIDACIÓN BIOMÉTRICA — Cámara no disponible durante el test.', W/2, y+8, {align:'center'});
+    doc.setTextColor(40,40,60);
+    y += 16;
+  }
+
+  // Narrative
+  if(y > H - 60) { doc.addPage(); y = 15; }
+
+  doc.setFillColor(20,28,46);
+  doc.rect(10,y,W-20,8,'F');
+  doc.setTextColor(...colors.light);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.text('ANÁLISIS EJECUTIVO Y RECOMENDACIÓN', 14, y+5);
+  y += 12;
+
+  doc.setTextColor(40,40,60);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8.5);
+  const plainNarrative = ev.narrative.replace(/<[^>]*>/g,'');
+  const lines = doc.splitTextToSize(plainNarrative, W-24);
+  doc.text(lines, 12, y);
+  y += lines.length * 5 + 5;
+
+  // Footer
+  const footerY = H - 20;
+  doc.setDrawColor(...colors.steel);
+  doc.line(10, footerY, W-10, footerY);
+  doc.setFontSize(7);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(...colors.steel);
+  doc.text('DOCUMENTO CONFIDENCIAL | SPC-100 Sistema de Evaluación de Personal de Seguridad', W/2, footerY+5, {align:'center'});
+  doc.text('Este informe es de uso exclusivo del proceso de selección. Queda prohibida su reproducción o distribución no autorizada.', W/2, footerY+10, {align:'center'});
+  doc.text(`Página 1 | Evaluación N° ${String(ev.correlativo).padStart(4,'0')}`, W/2, footerY+15, {align:'center'});
+
+  doc.save(`SPC100_Informe_${ev.postulant.nombre.replace(/\s+/g,'_')}_${ev.fecha}.pdf`);
+  showToast('✅ Informe PDF generado exitosamente');
+}
+
+// ================================================================
+// ADMIN: HISTORIAL
+// ================================================================
+function renderHistorial() {
+  const tbody = document.getElementById('historial-tbody');
+  if(!tbody) return;
+
+  let evals = lsGet('evaluations', []);
+
+  // Apply filters
+  const fPerfil = document.getElementById('filter-perfil')?.value || '';
+  const fResult = document.getElementById('filter-resultado')?.value || '';
+  const fDesde = document.getElementById('filter-desde')?.value || '';
+  const fHasta = document.getElementById('filter-hasta')?.value || '';
+
+  if(fPerfil) evals = evals.filter(e => e.postulant.cargo === fPerfil);
+  if(fResult) evals = evals.filter(e => e.resultado === fResult);
+  if(fDesde) evals = evals.filter(e => e.fecha >= fDesde);
+  if(fHasta) evals = evals.filter(e => e.fecha <= fHasta);
+
+  if(evals.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:2rem">No hay evaluaciones registradas</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = evals.map(ev => {
+    const badgeClass = ev.resultado === 'recomendado' ? 'badge-green' : ev.resultado === 'riesgoso' ? 'badge-amber' : 'badge-red';
+    const badgeText = ev.resultado === 'recomendado' ? 'Recomendado' : ev.resultado === 'riesgoso' ? 'Riesgoso' : 'No Recomendado';
+    return `
+      <tr>
+        <td><span style="font-family:var(--font-mono);color:var(--accent-blue-glow)">#${String(ev.correlativo).padStart(4,'0')}</span></td>
+        <td style="color:var(--text-primary)">${ev.postulant.nombre}</td>
+        <td><span class="badge badge-blue">${PROFILES[ev.postulant.cargo]||ev.postulant.cargo}</span></td>
+        <td style="font-family:var(--font-mono)">${ev.fecha}</td>
+        <td style="font-family:var(--font-mono)">${ev.scoreTest}%</td>
+        <td style="font-family:var(--font-mono)">${ev.scoreBio !== null && ev.scoreBio !== undefined ? ev.scoreBio+'%' : '<span style="color:var(--text-muted)">N/A</span>'}</td>
+        <td style="font-family:var(--font-mono);font-weight:600">${ev.scoreFinal}%</td>
+        <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+        <td>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-secondary btn-sm" onclick="viewReport('${ev.id}')">Ver</button>
+            <button class="btn btn-primary btn-sm" onclick="downloadFromHistory('${ev.id}')">PDF</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteEval('${ev.id}')">✕</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function viewReport(id) {
+  const evals = lsGet('evaluations', []);
+  const ev = evals.find(e => e.id === id);
+  if(!ev) return;
+
+  window._modalEval = ev;
+  document.getElementById('btn-dl-from-modal').onclick = () => generatePDF(ev);
+
+  const verdictMap = {
+    recomendado: '✅ Se recomienda la contratación',
+    riesgoso: '⚠️ Contratación riesgosa — evaluación adicional',
+    no_recomendado: '❌ No se recomienda la contratación'
+  };
+
+  let html = `
+    <div class="report-section">
+      <div class="report-section-title">Datos del Postulante</div>
+      ${[['Nombre',ev.postulant.nombre],['RUT/DNI',ev.postulant.rut],['Edad',ev.postulant.edad+' años'],
+         ['Cargo',PROFILES[ev.postulant.cargo]||ev.postulant.cargo],['Fecha',ev.fecha],
+         ['Email',ev.postulant.email||'—'],['Teléfono',ev.postulant.tel||'—']
+      ].map(([l,v])=>`<div class="report-row"><span class="report-row-label">${l}</span><span class="report-row-value">${v}</span></div>`).join('')}
+    </div>
+
+    <div class="report-section">
+      <div class="report-section-title">Resultado Final</div>
+      <div style="text-align:center;padding:1.5rem;background:var(--bg-surface);border-radius:6px;margin-bottom:1rem">
+        <div style="font-size:2rem;font-weight:700;font-family:var(--font-display)">${verdictMap[ev.resultado]||ev.resultado}</div>
+        <div style="font-size:2.5rem;font-weight:700;font-family:var(--font-display);color:${ev.resultado==='recomendado'?'var(--accent-green)':ev.resultado==='riesgoso'?'var(--accent-amber)':'var(--accent-red)'}">${ev.scoreFinal}%</div>
+      </div>
+      <div class="report-row"><span class="report-row-label">Test Psicométrico (80%)</span><span class="report-row-value">${ev.scoreTest}%</span></div>
+      <div class="report-row"><span class="report-row-label">Biométrico (20%)</span><span class="report-row-value">${ev.scoreBio!==null&&ev.scoreBio!==undefined?ev.scoreBio+'%':'N/A'}</span></div>
+    </div>
+  `;
+
+  if(ev.bioMetrics) {
+    html += `
+      <div class="report-section">
+        <div class="report-section-title">Análisis Biométrico</div>
+        <div class="report-row"><span class="report-row-label">Emoción Predominante</span><span class="report-row-value">${EMOTION_LABELS[ev.bioMetrics.predominant]||ev.bioMetrics.predominant}</span></div>
+        <div class="report-row"><span class="report-row-label">Variabilidad Emocional</span><span class="report-row-value">${ev.bioMetrics.variability}%</span></div>
+        <div class="report-row"><span class="report-row-label">Emociones de Alerta</span><span class="report-row-value">${ev.bioMetrics.alertPct}%</span></div>
+    `;
+    if(ev.bioLog && ev.bioLog.length > 0) {
+      html += '<div style="margin-top:1rem"><div class="report-section-title" style="font-size:0.75rem">Log Biométrico</div><div class="emotion-timeline">';
+      ev.bioLog.forEach(entry => {
+        html += `<div class="timeline-entry"><span class="t-time">${entry.ts}</span><span class="t-q">P${entry.q}</span><span class="t-emotion">${EMOTION_LABELS[entry.emotion]||entry.emotion}</span><span class="t-conf">${entry.conf}%</span></div>`;
+      });
+      html += '</div></div>';
+    }
+    html += '</div>';
+  }
+
+  html += `
+    <div class="report-section">
+      <div class="report-section-title">Análisis Ejecutivo</div>
+      <p style="color:var(--text-secondary);font-size:0.88rem;line-height:1.8">${ev.narrative}</p>
+    </div>
+  `;
+
+  document.getElementById('report-modal-content').innerHTML = html;
+  document.getElementById('report-modal').style.display = 'flex';
+}
+
+function downloadFromHistory(id) {
+  const evals = lsGet('evaluations', []);
+  const ev = evals.find(e => e.id === id);
+  if(ev) generatePDF(ev);
+}
+
+function deleteEval(id) {
+  if(!confirm('¿Confirma que desea eliminar este registro?')) return;
+  let evals = lsGet('evaluations', []);
+  evals = evals.filter(e => e.id !== id);
+  lsSet('evaluations', evals);
+  renderHistorial();
+  showToast('Registro eliminado');
+}
+
+function clearFilters() {
+  document.getElementById('filter-perfil').value = '';
+  document.getElementById('filter-resultado').value = '';
+  document.getElementById('filter-desde').value = '';
+  document.getElementById('filter-hasta').value = '';
+  renderHistorial();
+}
+
+// ================================================================
+// ADMIN: BATERIAS
+// ================================================================
+function renderBateriasAdmin() {
+  // Render profile selector
+  const sel = document.getElementById('profile-selector-admin');
+  sel.innerHTML = Object.entries(PROFILES).map(([key,label]) =>
+    `<button class="profile-btn ${key===currentAdminProfile?'active':''}" onclick="selectAdminProfile('${key}')">${label}</button>`
+  ).join('');
+
+  renderQList();
+}
+
+function selectAdminProfile(profile) {
+  currentAdminProfile = profile;
+  renderBateriasAdmin();
+}
+
+function renderQList() {
+  const allQ = lsGet('questions', generateSampleQuestions());
+  const questions = allQ[currentAdminProfile] || [];
+  document.getElementById('q-count-label').textContent = `${questions.length} preguntas en batería — ${currentAdminProfile.replace('_',' ')}`;
+
+  const cont = document.getElementById('questions-list');
+  if(questions.length === 0) {
+    cont.innerHTML = '<div class="alert-box alert-warn">⚠️ No hay preguntas para este perfil. Agrega la primera.</div>';
+    return;
+  }
+
+  cont.innerHTML = questions.map((q,i) => `
+    <div class="question-editor">
+      <div class="q-editor-header">
+        <span class="q-number">P${String(i+1).padStart(2,'0')} — ${q.type === 'likert' ? 'Likert 1-5' : 'Opción Múltiple'}</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="weight-tag">Peso: ${q.weight}%</span>
+          <button class="btn btn-secondary btn-sm" onclick="editQuestion('${currentAdminProfile}',${i})">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteQuestion('${currentAdminProfile}',${i})">✕</button>
+        </div>
+      </div>
+      <div style="font-size:0.88rem;color:var(--text-secondary);line-height:1.5">${q.text}</div>
+      ${q.type==='multiple' && q.options ? `<div style="margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:6px">${q.options.map(o=>`<span class="badge badge-blue">${o.text} (${o.val})</span>`).join('')}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function toggleAddQForm() {
+  const form = document.getElementById('add-q-form');
+  form.classList.toggle('open');
+  if(form.classList.contains('open')) {
+    document.getElementById('nq-text').value = '';
+    document.getElementById('nq-type').value = 'likert';
+    document.getElementById('nq-weight').value = '6.67';
+    updateNewQOptions();
+  }
+}
+
+function updateNewQOptions() {
+  const type = document.getElementById('nq-type').value;
+  const sect = document.getElementById('nq-options-section');
+  if(type === 'multiple') {
+    sect.style.display = 'block';
+    document.getElementById('nq-options-list').innerHTML = `
+      <div class="option-item"><input type="text" placeholder="Opción (valor 1)"><input type="number" placeholder="Valor" min="1" max="5" style="width:80px" value="1"></div>
+      <div class="option-item"><input type="text" placeholder="Opción (valor 3)"><input type="number" placeholder="Valor" min="1" max="5" style="width:80px" value="3"></div>
+      <div class="option-item"><input type="text" placeholder="Opción (valor 5)"><input type="number" placeholder="Valor" min="1" max="5" style="width:80px" value="5"></div>
+    `;
+  } else {
+    sect.style.display = 'none';
+  }
+}
+
+function addOptionField() {
+  const list = document.getElementById('nq-options-list');
+  const div = document.createElement('div');
+  div.className = 'option-item';
+  div.innerHTML = '<input type="text" placeholder="Nueva opción"><input type="number" placeholder="Valor" min="1" max="5" style="width:80px">';
+  list.appendChild(div);
+}
+
+function saveNewQuestion() {
+  const text = document.getElementById('nq-text').value.trim();
+  const type = document.getElementById('nq-type').value;
+  const weight = parseFloat(document.getElementById('nq-weight').value) || 5;
+
+  if(!text) { showToast('⚠️ Ingrese el texto de la pregunta'); return; }
+
+  const newQ = { id: 'q_'+Date.now(), text, type, weight };
+
+  if(type === 'multiple') {
+    const items = document.querySelectorAll('#nq-options-list .option-item');
+    const opts = [];
+    items.forEach(item => {
+      const inputs = item.querySelectorAll('input');
+      const t = inputs[0].value.trim();
+      const v = parseInt(inputs[1].value) || 1;
+      if(t) opts.push({text:t, val:v});
+    });
+    if(opts.length < 2) { showToast('⚠️ Agregue al menos 2 opciones'); return; }
+    newQ.options = opts;
+  }
+
+  const allQ = lsGet('questions', generateSampleQuestions());
+  if(!allQ[currentAdminProfile]) allQ[currentAdminProfile] = [];
+  allQ[currentAdminProfile].push(newQ);
+  lsSet('questions', allQ);
+
+  toggleAddQForm();
+  renderQList();
+  showToast('✅ Pregunta guardada');
+}
+
+function deleteQuestion(profile, idx) {
+  if(!confirm('¿Eliminar esta pregunta?')) return;
+  const allQ = lsGet('questions', generateSampleQuestions());
+  allQ[profile].splice(idx, 1);
+  lsSet('questions', allQ);
+  renderQList();
+  showToast('Pregunta eliminada');
+}
+
+function editQuestion(profile, idx) {
+  const allQ = lsGet('questions', generateSampleQuestions());
+  const q = allQ[profile][idx];
+  const newWeight = prompt(`Peso actual: ${q.weight}%\nIngrese nuevo peso:`, q.weight);
+  if(newWeight !== null) {
+    allQ[profile][idx].weight = parseFloat(newWeight) || q.weight;
+    lsSet('questions', allQ);
+    renderQList();
+    showToast('✅ Pregunta actualizada');
+  }
+}
+
+// ================================================================
+// ADMIN: TABS
+// ================================================================
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+
+  const tabs = document.querySelectorAll('.admin-tab');
+  const panels = ['historial','baterias','configuracion'];
+  const idx = panels.indexOf(tab);
+  if(idx >= 0) tabs[idx].classList.add('active');
+  document.getElementById('admin-'+tab)?.classList.add('active');
+
+  if(tab === 'baterias') renderBateriasAdmin();
+  if(tab === 'historial') renderHistorial();
+  if(tab === 'configuracion') loadConfig();
+}
+
+// ================================================================
+// CONFIG
+// ================================================================
+function saveConfig() {
+  const cfg = {
+    umbraRec: parseInt(document.getElementById('cfg-umbral-rec').value) || 70,
+    umbralRisk: parseInt(document.getElementById('cfg-umbral-rsk')?.value||'50') || 50,
+    bioWeight: parseInt(document.getElementById('cfg-bio-weight').value) || 20,
+    bioInterval: parseInt(document.getElementById('cfg-bio-interval').value) || 10
+  };
+  lsSet('config', cfg);
+  showToast('✅ Configuración guardada');
+}
+
+function exportData() {
+  const data = {
+    evaluations: lsGet('evaluations',[]),
+    questions: lsGet('questions',{}),
+    config: lsGet('config',{})
+  };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `spc100_data_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  showToast('✅ Datos exportados');
+}
+
+function clearAllData() {
+  if(!confirm('¿Eliminar TODO el historial de evaluaciones? Esta acción no puede deshacerse.')) return;
+  lsSet('evaluations', []);
+  renderHistorial();
+  showToast('Historial eliminado');
+}
+
+function reloadSampleData() {
+  if(!confirm('¿Recargar los datos de muestra? Se agregarán los 3 registros de ejemplo al historial actual.')) return;
+  const evals = lsGet('evaluations', []);
+  const samples = generateSampleEvals();
+  const allIds = evals.map(e => e.id);
+  samples.forEach(s => { if(!allIds.includes(s.id)) evals.push(s); });
+  lsSet('evaluations', evals);
+  renderHistorial();
+  showToast('✅ Datos de muestra recargados');
+}
+
+// ================================================================
+// MODAL
+// ================================================================
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+// Close on overlay click
+document.addEventListener('click', e => {
+  if(e.target.classList.contains('modal-overlay')) {
+    e.target.style.display = 'none';
+  }
+});
+
+// ================================================================
+// TOAST
+// ================================================================
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ================================================================
+// BOOT
+// ================================================================
+document.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
