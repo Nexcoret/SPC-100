@@ -1350,7 +1350,6 @@ select option { background: var(--bg-surface); }
 </head>
 <body>
 
-<!-- ─── HEADER ─── -->
 <header id="app-header">
   <div class="logo-mark">
     <div class="logo-badge">SPC-100</div>
@@ -1370,15 +1369,10 @@ select option { background: var(--bg-surface); }
   </div>
 </header>
 
-<!-- ─── TOAST ─── -->
 <div id="toast"></div>
 
-<!-- ─── APP ROOT ─── -->
 <div id="app-root">
 
-  <!-- ══════════════════════════════════════════
-       VIEW: HOME
-  ══════════════════════════════════════════ -->
   <div id="view-home" class="view active">
     <div id="view-home-inner">
       <div class="hero-section">
@@ -1407,8 +1401,8 @@ select option { background: var(--bg-surface); }
             <div class="stat-label">Perfiles Evaluados</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-value">15+</div>
-            <div class="stat-label">Preguntas por Perfil</div>
+            <div class="stat-value">60</div>
+            <div class="stat-label">Preguntas 16PF-5</div>
           </div>
           <div class="stat-cell">
             <div class="stat-value">80%</div>
@@ -1423,13 +1417,9 @@ select option { background: var(--bg-surface); }
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       VIEW: EVALUATION
-  ══════════════════════════════════════════ -->
   <div id="view-eval" class="view">
     <div style="max-width:900px;margin:0 auto;padding:2rem;">
 
-      <!-- STEP 0: Registration -->
       <div id="eval-step-register">
         <div class="section-header">
           <span class="section-badge">Paso 1 / 3</span>
@@ -1498,7 +1488,6 @@ select option { background: var(--bg-surface); }
         </div>
       </div>
 
-      <!-- STEP 1: Biometric Consent -->
       <div id="eval-step-bio" style="display:none">
         <div class="section-header">
           <span class="section-badge">Paso 2 / 3</span>
@@ -1514,13 +1503,11 @@ select option { background: var(--bg-surface); }
           <div id="bio-init-status" class="spinner"></div>
           <div class="loading-text" id="bio-init-text">Cargando modelos de análisis facial...</div>
           <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem">
-            <!-- Botón obligatorio para activar la cámara -->
             <button class="btn btn-primary" onclick="enableCamera()" id="btn-enable-cam" style="display:none">Activar Cámara →</button>
           </div>
         </div>
       </div>
 
-      <!-- STEP 2: Test -->
       <div id="eval-step-test" style="display:none">
         <div class="section-header">
           <span class="section-badge">Paso 3 / 3</span>
@@ -1528,12 +1515,11 @@ select option { background: var(--bg-surface); }
         </div>
 
         <div class="two-col">
-          <!-- LEFT: Questions -->
           <div>
             <div class="progress-container">
               <div class="progress-header">
                 <span class="progress-label">Progreso de Evaluación</span>
-                <span class="progress-count" id="q-count">1 / 15</span>
+                <span class="progress-count" id="q-count">1 / 60</span>
               </div>
               <div class="progress-bar-track">
                 <div class="progress-bar-fill" id="q-progress" style="width:0%"></div>
@@ -1553,7 +1539,6 @@ select option { background: var(--bg-surface); }
             </div>
           </div>
 
-          <!-- RIGHT: Biometric -->
           <div>
             <div class="biometric-panel" id="biometric-panel">
               <div class="bio-header">
@@ -1565,17 +1550,14 @@ select option { background: var(--bg-surface); }
                 <canvas id="bio-canvas"></canvas>
                 <div class="bio-overlay-label" id="bio-overlay-text">SIN SEÑAL</div>
               </div>
-              <!-- El panel de Emociones está oculto para el evaluado, manteniendo la privacidad de resultados en tiempo real -->
               <div class="emotion-display" id="emotion-display" style="display: none;">
                 <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.1em">Emociones Detectadas</div>
-                <!-- filled by JS -->
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- STEP 3: Results (NOW HIDDEN FROM APPLICANT) -->
       <div id="eval-step-results" style="display:none">
         <div class="section-header">
           <span class="section-badge">Paso Final</span>
@@ -1599,12 +1581,8 @@ select option { background: var(--bg-surface); }
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       VIEW: ADMIN
-  ══════════════════════════════════════════ -->
   <div id="view-admin" class="view">
 
-    <!-- LOGIN OVERLAY -->
     <div class="login-overlay" id="admin-login-overlay">
       <div class="login-box">
         <div class="login-title">🔐 Acceso Restringido</div>
@@ -1622,7 +1600,6 @@ select option { background: var(--bg-surface); }
       </div>
     </div>
 
-    <!-- ADMIN CONTENT -->
     <div style="max-width:1200px;margin:0 auto;padding:2rem">
       <div class="section-header">
         <span class="section-badge">Administración</span>
@@ -1638,7 +1615,6 @@ select option { background: var(--bg-surface); }
         <button class="admin-tab" onclick="switchAdminTab('configuracion')">⚙️ Configuración</button>
       </div>
 
-      <!-- TAB: HISTORIAL -->
       <div id="admin-historial" class="admin-panel active">
         <div class="filter-bar">
           <select id="filter-perfil" onchange="renderHistorial()">
@@ -1683,18 +1659,15 @@ select option { background: var(--bg-surface); }
         </div>
       </div>
 
-      <!-- TAB: BATERIAS -->
       <div id="admin-baterias" class="admin-panel">
         <div class="profile-selector-admin" id="profile-selector-admin">
-          <!-- filled by JS -->
-        </div>
+          </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
           <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted)" id="q-count-label">— preguntas en batería</div>
           <button class="btn btn-primary btn-sm" onclick="toggleAddQForm()">+ Agregar Pregunta</button>
         </div>
 
-        <!-- ADD QUESTION FORM -->
         <div class="add-q-form" id="add-q-form">
           <div style="font-family:var(--font-display);font-size:1rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem">Nueva Pregunta</div>
           <div class="form-group" style="margin-bottom:1rem">
@@ -1711,7 +1684,7 @@ select option { background: var(--bg-surface); }
             </div>
             <div class="form-group">
               <label>Peso en Perfil (%) *</label>
-              <input type="number" id="nq-weight" min="0.1" max="20" step="0.1" value="6.67" placeholder="Ej: 6.67">
+              <input type="number" id="nq-weight" min="0.1" max="20" step="0.1" value="1.67" placeholder="Ej: 1.67">
             </div>
           </div>
           <div id="nq-options-section" style="margin-top:1rem;display:none">
@@ -1731,21 +1704,19 @@ select option { background: var(--bg-surface); }
         </div>
 
         <div id="questions-list">
-          <!-- filled by JS -->
-        </div>
+          </div>
       </div>
 
-      <!-- TAB: CONFIG -->
       <div id="admin-configuracion" class="admin-panel">
         <div class="form-card">
-          <div class="form-card-title">⚙️ Parámetros del Sistema</div>
+          <div class="form-card-title">⚙️ Parámetros del Sistema (Base para Guardia Estándar)</div>
           <div class="form-grid">
             <div class="form-group">
-              <label>Umbral Recomendado (%)</label>
+              <label>Umbral Recomendado Base (%)</label>
               <input type="number" id="cfg-umbral-rec" value="70">
             </div>
             <div class="form-group">
-              <label>Umbral Riesgoso (%)</label>
+              <label>Umbral Riesgoso Base (%)</label>
               <input type="number" id="cfg-umbral-risk" value="50">
             </div>
             <div class="form-group">
@@ -1757,6 +1728,9 @@ select option { background: var(--bg-surface); }
               <input type="number" id="cfg-bio-interval" value="10">
             </div>
           </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
+            * Nota: Los perfiles superiores sumarán automáticamente un +5% de exigencia por cada nivel jerárquico.
+          </p>
           <div style="margin-top:1rem">
             <button class="btn btn-primary" onclick="saveConfig()">Guardar Configuración</button>
           </div>
@@ -1767,7 +1741,6 @@ select option { background: var(--bg-surface); }
           <div style="display:flex;gap:1rem;flex-wrap:wrap">
             <button class="btn btn-secondary" onclick="exportData()">⬇ Exportar Datos JSON</button>
             <button class="btn btn-danger" onclick="clearAllData()">🗑️ Eliminar Todo el Historial</button>
-            <button class="btn btn-secondary" onclick="reloadSampleData()">🔄 Recargar Datos de Muestra</button>
           </div>
         </div>
       </div>
@@ -1776,7 +1749,6 @@ select option { background: var(--bg-surface); }
 
 </div>
 
-<!-- ─── MODAL: REPORT DETAIL ─── -->
 <div class="modal-overlay" id="report-modal" style="display:none">
   <div class="modal-box" style="max-width:800px">
     <div class="modal-header">
@@ -1791,7 +1763,6 @@ select option { background: var(--bg-surface); }
   </div>
 </div>
 
-<!-- ─── MAIN SCRIPT ─── -->
 <script>
 // ================================================================
 // CONSTANTS
@@ -1806,12 +1777,12 @@ const PROFILES = {
 };
 
 const PROFILE_DESCRIPTIONS = {
-  guardia_estandar: 'Evaluación enfocada en integridad, obediencia a protocolos y capacidad de respuesta básica.',
-  guardia_tactico: 'Evaluación con énfasis en manejo de situaciones de riesgo, respuesta física y control emocional bajo presión.',
-  jefe_grupo: 'Evaluación de habilidades de liderazgo operativo, coordinación de equipos y toma de decisiones en campo.',
-  supervisor: 'Evaluación de competencias de supervisión, gestión de personal y criterio estratégico.',
-  jefe_seguridad: 'Evaluación integral de liderazgo, planificación estratégica, manejo de crisis y toma de decisiones de alto impacto.',
-  administrador_contrato: 'Evaluación de competencias administrativas, gestión de contratos, negociación y cumplimiento normativo.'
+  guardia_estandar: 'Evaluación enfocada en integridad, obediencia a protocolos y capacidad de respuesta básica. (Exigencia Nivel Base)',
+  guardia_tactico: 'Evaluación con énfasis en manejo de situaciones de riesgo, respuesta física y control emocional. (Exigencia +5%)',
+  jefe_grupo: 'Evaluación de habilidades de liderazgo operativo, coordinación de equipos y toma de decisiones. (Exigencia +10%)',
+  supervisor: 'Evaluación de competencias de supervisión, gestión de personal y criterio estratégico. (Exigencia +15%)',
+  jefe_seguridad: 'Evaluación integral de liderazgo, planificación estratégica, manejo de crisis. (Exigencia +20%)',
+  administrador_contrato: 'Evaluación de competencias administrativas, gestión de contratos, negociación. (Exigencia +25%)'
 };
 
 const EMOTIONS = ['neutral','happy','sad','angry','surprised','fearful','disgusted'];
@@ -1824,6 +1795,16 @@ const EMOTION_COLORS = {
   angry: '#ef4444', surprised: '#f59e0b', fearful: '#f97316', disgusted: '#8b5cf6'
 };
 const ALERT_EMOTIONS = ['angry','fearful','disgusted'];
+
+// Exigencia incremental (+5% por cada perfil)
+const EXIGENCY_MODIFIERS = {
+  guardia_estandar: 0,
+  guardia_tactico: 5,
+  jefe_grupo: 10,
+  supervisor: 15,
+  jefe_seguridad: 20,
+  administrador_contrato: 25
+};
 
 // ================================================================
 // STATE
@@ -1860,157 +1841,132 @@ function lsSet(key, val) {
 }
 
 // ================================================================
-// SAMPLE DATA
+// DYNAMIC QUESTION GENERATOR (16PF-5)
 // ================================================================
 function generateSampleQuestions() {
-  const base = [
-    // Integridad
-    { id:'q1', text:'¿Cómo reaccionaría si descubre que un compañero sustrae bienes del cliente?', type:'multiple', options:[
-      {text:'Lo ignoro para evitar conflictos',val:1},{text:'Lo confronto directamente pero no lo reporto',val:2},
-      {text:'Reporto al supervisor inmediato',val:4},{text:'Reporto formalmente siguiendo el protocolo establecido',val:5}
-    ]},
-    { id:'q2', text:'Ante una situación ambigua donde el reglamento no es claro, usted:', type:'multiple', options:[
-      {text:'Actúo según mi criterio personal',val:2},{text:'Espero instrucciones sin actuar',val:3},
-      {text:'Consulto con mi supervisor antes de actuar',val:5},{text:'Resuelvo rápido sin consultar',val:2}
-    ]},
-    { id:'q3', text:'¿Con qué frecuencia siente la necesidad de incumplir normas para lograr resultados?', type:'likert'},
-    // Manejo del estrés
-    { id:'q4', text:'Durante situaciones de alta presión operativa, su nivel de control emocional es:', type:'likert'},
-    { id:'q5', text:'Cuando enfrenta múltiples emergencias simultáneas, usted:', type:'multiple', options:[
-      {text:'Se paraliza y espera refuerzos',val:1},{text:'Prioriza por intuición sin protocolo',val:2},
-      {text:'Aplica protocolos de priorización y solicita apoyo',val:5},{text:'Actúa en todas a la vez',val:2}
-    ]},
-    { id:'q6', text:'Su capacidad para recuperarse emocionalmente después de un incidente crítico es:', type:'likert'},
-    // Respuesta ante amenazas
-    { id:'q7', text:'Al detectar un individuo con comportamiento sospechoso, usted:', type:'multiple', options:[
-      {text:'Lo confronta físicamente de inmediato',val:1},{text:'Observa y reporta sin intervenir',val:4},
-      {text:'Activa protocolo de seguimiento y alerta',val:5},{text:'Ignora si no hay certeza',val:2}
-    ]},
-    { id:'q8', text:'Ante una amenaza directa de violencia, su primera acción es:', type:'multiple', options:[
-      {text:'Usar fuerza máxima disponible',val:1},{text:'Intentar desescalar verbalmente',val:4},
-      {text:'Aplicar protocolo de contención proporcional',val:5},{text:'Retirarse y esperar',val:2}
-    ]},
-    { id:'q9', text:'Su nivel de capacitación en primeros auxilios y respuesta a emergencias es:', type:'likert'},
-    // Trabajo en equipo
-    { id:'q10', text:'En operativos grupales, su rol preferido es:', type:'multiple', options:[
-      {text:'Actuar de forma independiente',val:1},{text:'Seguir instrucciones del equipo',val:4},
-      {text:'Colaborar activamente y coordinar',val:5},{text:'Delegar en otros',val:2}
-    ]},
-    { id:'q11', text:'¿Qué tan fácilmente adapta su estilo de trabajo a distintos compañeros?', type:'likert'},
-    { id:'q12', text:'Ante un conflicto interpersonal en el equipo, usted:', type:'multiple', options:[
-      {text:'Lo ignora para mantener la paz',val:2},{text:'Escala al supervisor directamente',val:3},
-      {text:'Busca resolución directa y constructiva',val:5},{text:'Toma partido por quien le parece correcto',val:2}
-    ]},
-    // Liderazgo
-    { id:'q13', text:'¿Con qué frecuencia toma iniciativa sin esperar instrucciones?', type:'likert'},
-    { id:'q14', text:'Su experiencia en conducción de equipos de trabajo es:', type:'likert'},
-    // Toma de decisiones
-    { id:'q15', text:'Al tomar decisiones bajo presión de tiempo, su enfoque principal es:', type:'multiple', options:[
-      {text:'Consultar siempre antes de actuar',val:2},{text:'Actuar por instinto inmediato',val:2},
-      {text:'Evaluar rápidamente opciones y decidir',val:5},{text:'Esperar que la situación se resuelva sola',val:1}
-    ]},
-    { id:'q16', text:'Su capacidad de análisis lógico ante situaciones complejas es:', type:'likert'},
-    { id:'q17', text:'Al cometer un error operativo, usted:', type:'multiple', options:[
-      {text:'Lo oculta para evitar consecuencias',val:1},{text:'Lo minimiza en el reporte',val:2},
-      {text:'Lo reporta de forma transparente y propone mejora',val:5},{text:'Culpa a factores externos',val:1}
-    ]}
+  const baseQuestions = [
+    { id: 1, dim: 'A', dir: 1, text: 'En un negocio, me resultaría más interesante ocuparme de:', opts: ['A. la maquinaria o los registros', 'B. Neutral', 'C. entrevistar y conversar con personas'] },
+    { id: 31, dim: 'A', dir: -1, text: 'Preferiría:', opts: ['A. trabajar en una oficina atendiendo personas', 'B. Neutral', 'C. ser arquitecto/a y dibujar planos en un despacho tranquilo'] },
+    { id: 63, dim: 'A', dir: 1, text: 'No me siento cómodo/a al expresar sentimientos de cariño o afecto.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 96, dim: 'A', dir: -1, text: 'Disfruto estar con personas que expresan abiertamente sus emociones.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 2, dim: 'C', dir: -1, text: 'Por lo general, me acuesto conforme con cómo salió mi día.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 32, dim: 'C', dir: 1, text: 'Cuando varias pequeñas cosas empiezan a salir mal una tras otra:', opts: ['A. siento que no puedo controlarlas', 'B. Neutral', 'C. sigo adelante con naturalidad'] },
+    { id: 64, dim: 'C', dir: -1, text: 'En mi vida personal casi siempre logro las metas que me propongo.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 97, dim: 'C', dir: -1, text: 'No dejo que las pequeñas cosas me depriman.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 3, dim: 'E', dir: -1, text: 'Si noto que el razonamiento de otra persona es incorrecto, normalmente:', opts: ['A. se lo hago notar', 'B. Neutral', 'C. lo dejo pasar'] },
+    { id: 36, dim: 'E', dir: -1, text: 'En situaciones que dependen de mí, me siento bien dando instrucciones a otros.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 66, dim: 'E', dir: -1, text: 'Si alguien hace algo incorrecto, normalmente se lo digo.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 102, dim: 'E', dir: 1, text: 'Si me perdiera en una ciudad y mis amigos no estuvieran de acuerdo con el camino que propongo:', opts: ['A. no discutiría y los seguiría', 'B. Neutral', 'C. les diría que creo que mi camino es mejor'] },
+    { id: 6, dim: 'F', dir: 1, text: 'Me atrae más pasar la tarde en una actividad tranquila que asistir a una reunión muy animada.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 37, dim: 'F', dir: 1, text: 'Preferiría pasar una tarde:', opts: ['A. haciendo con calma algo que me gusta', 'B. Neutral', 'C. en una fiesta animada'] },
+    { id: 68, dim: 'F', dir: -1, text: 'Generalmente disfruto estar en medio de mucha actividad y emoción.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 103, dim: 'F', dir: -1, text: 'La gente me ve como una persona animada y despreocupada.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 5, dim: 'G', dir: -1, text: 'Al tomar una decisión, suelo pensar con cuidado en lo que es correcto y justo.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 40, dim: 'G', dir: -1, text: 'Valoro y respeto más las normas y los buenos modales que una vida cómoda.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 72, dim: 'G', dir: 1, text: 'Me irrita que la gente insista en que siga hasta las menores normas de seguridad.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 106, dim: 'G', dir: 1, text: 'Autoridades intentan muchas veces impedirme hacer lo que quiero.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 41, dim: 'H', dir: 1, text: 'Me siento tímido/a y retraído/a al hacer amistades con personas desconocidas.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 71, dim: 'H', dir: 1, text: 'Me desconcierta convertirme de pronto en el centro de atención en un grupo.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 105, dim: 'H', dir: 1, text: 'Siempre tengo que esforzarme por vencer mi timidez.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 137, dim: 'H', dir: -1, text: 'Cuando entro a un grupo nuevo, normalmente me adapto rápido.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 8, dim: 'I', dir: 1, text: 'Me parecería más interesante ser:', opts: ['A. ingeniero/a en construcción', 'B. Neutral', 'C. autor/a de obras teatrales'] },
+    { id: 42, dim: 'I', dir: -1, text: 'Si pudiera, preferiría practicar:', opts: ['A. esgrima o danza', 'B. Neutral', 'C. tenis o lucha libre'] },
+    { id: 110, dim: 'I', dir: 1, text: 'Me interesan las cosas mecánicas y se me da bastante bien arreglarlas.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 138, dim: 'I', dir: 1, text: 'Prefiero leer relatos duros o de acción realista antes que novelas sentimentales e imaginativas.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 13, dim: 'L', dir: -1, text: 'Muchas personas te perjudicarían si eso les ayudara a progresar.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 45, dim: 'L', dir: 1, text: 'La gente suele formarse una opinión de mí demasiado rápido.', opts: ['A. Casi nunca', 'B. Neutral', 'C. A menudo'] },
+    { id: 78, dim: 'L', dir: 1, text: 'Cuando el trabajo se vuelve fácil, la gente tiende a hacerse floja.', opts: ['A. Casi nunca', 'B. Neutral', 'C. A menudo'] },
+    { id: 112, dim: 'L', dir: -1, text: 'Da la impresión de que no puedo confiar en más de la mitad de la gente que voy conociendo.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 17, dim: 'M', dir: 1, text: '¿Mis pensamientos son demasiado complejos para que muchas personas los comprendan?', opts: ['A. Casi nunca', 'B. Neutral', 'C. A menudo'] },
+    { id: 46, dim: 'M', dir: 1, text: 'Soy de las personas que:', opts: ['A. hacen siempre las cosas prácticas', 'B. Neutral', 'C. imaginan o reflexionan sobre sí mismas'] },
+    { id: 81, dim: 'M', dir: 1, text: 'Presto más atención a:', opts: ['A. las cosas prácticas que me rodean', 'B. Neutral', 'C. mis pensamientos y mi imaginación'] },
+    { id: 114, dim: 'M', dir: 1, text: 'A menudo los demás dicen que mis ideas son realistas y prácticas.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 15, dim: 'N', dir: 1, text: 'Hablo de mis sentimientos:', opts: ['A. con facilidad si noto interés', 'B. Neutral', 'C. solo cuando no me queda otra opción'] },
+    { id: 50, dim: 'N', dir: -1, text: 'Suelo ser reservado/a y guardar mis problemas para mí.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 84, dim: 'N', dir: 1, text: 'Al tratar con la gente, es mejor:', opts: ['A. hablar con total franqueza', 'B. Neutral', 'C. no mostrar todas tus cartas'] },
+    { id: 117, dim: 'N', dir: 1, text: 'Me resulta fácil hablar de mi vida, incluso de aspectos muy personales.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 19, dim: 'O', dir: 1, text: 'Pienso en cosas que debí haber dicho y no dije.', opts: ['A. Casi nunca', 'B. Neutral', 'C. A menudo'] },
+    { id: 54, dim: 'O', dir: -1, text: 'Me altero más que otras personas cuando veo a otros enojados entre sí.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 82, dim: 'O', dir: 1, text: 'Cuando me critican delante de otros, casi nunca me siento muy herido/a.', opts: ['A. Casi nunca', 'B. Neutral', 'C. A menudo'] },
+    { id: 119, dim: 'O', dir: 1, text: 'Tiendo a ser muy sensible y a preocuparme mucho por algo que hice.', opts: ['A. Casi nunca', 'B. Neutral', 'C. A menudo'] },
+    { id: 24, dim: 'Q1', dir: 1, text: 'Si tuviera que construir algo, seguiría las instrucciones al pie de la letra:', opts: ['A. verdadero', 'B. Neutral', 'C. falso, podría salir algo más interesante'] },
+    { id: 55, dim: 'Q1', dir: 1, text: 'Este mundo necesita más personas íntegras y constantes.', opts: ['A. Verdadero', 'B. Neutral', 'C. más reformadores con ideas nuevas'] },
+    { id: 86, dim: 'Q1', dir: 1, text: 'Me agrada más la gente que:', opts: ['A. es estable y tradicional', 'B. Neutral', 'C. revisa seriamente su manera de ver la vida'] },
+    { id: 149, dim: 'Q1', dir: 1, text: 'Prefiero probar maneras nuevas de hacer las cosas antes que seguir caminos conocidos.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 25, dim: 'Q2', dir: 1, text: 'Al construir o hacer algo, preferiría trabajar:', opts: ['A. con otras personas', 'B. Neutral', 'C. solo/a'] },
+    { id: 56, dim: 'Q2', dir: 1, text: 'Prefiero los juegos en los que:', opts: ['A. se juega en equipo', 'B. Neutral', 'C. cada uno juega por su cuenta'] },
+    { id: 89, dim: 'Q2', dir: -1, text: 'Suelo terminar mejor las cosas cuando trabajo solo/a que cuando trabajo con otros.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 123, dim: 'Q2', dir: 1, text: 'Prefiero almorzar:', opts: ['A. con otras personas', 'B. Neutral', 'C. solo/a'] },
+    { id: 26, dim: 'Q3', dir: 1, text: 'Me gusta planificar con anticipación para no perder tiempo entre tareas.', opts: ['A. Raras veces', 'B. Neutral', 'C. A menudo'] },
+    { id: 57, dim: 'Q3', dir: 1, text: 'A menudo dejo algunas cosas al azar en lugar de hacer planes muy detallados.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 93, dim: 'Q3', dir: -1, text: 'Soy algo perfeccionista y me gusta que las cosas se hagan bien.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 154, dim: 'Q3', dir: 1, text: 'Yo pienso que:', opts: ['A. algunos trabajos no requieren tanto cuidado', 'B. Neutral', 'C. cualquier trabajo debe hacerse bien'] },
+    { id: 28, dim: 'Q4', dir: -1, text: 'Cuando estoy tenso/a, hasta las cosas pequeñas me irritan.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 60, dim: 'Q4', dir: 1, text: 'Si alguien me interrumpe cuando estoy haciendo algo, no me afecta demasiado.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 94, dim: 'Q4', dir: 1, text: 'Cuando debo hacer una larga fila, no me pongo tan nervioso/a como la mayoría.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 124, dim: 'Q4', dir: 1, text: 'Soy paciente con la gente, incluso cuando no es cortés ni considerada conmigo.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] }
   ];
-
-  // Weights per profile (must sum ~100 per profile)
-  const weights = {
-    guardia_estandar:      [8,7,8, 7,6,5, 8,7,6, 6,5,5, 4,3, 6,5,5],
-    guardia_tactico:       [6,5,5, 9,8,8, 10,10,7, 5,4,4, 4,4, 6,5,5],
-    jefe_grupo:            [7,6,5, 7,7,6, 8,8,5, 9,8,8, 6,5, 5,5,5],
-    supervisor:            [7,6,5, 6,6,5, 6,6,4, 8,7,7, 9,8, 6,6,6],
-    jefe_seguridad:        [7,6,5, 6,6,5, 7,7,4, 7,6,6, 10,9, 6,7,6],
-    administrador_contrato:[9,8,7, 4,4,4, 5,5,4, 8,7,7, 9,8, 6,5,7]
-  };
 
   const result = {};
-  Object.keys(weights).forEach(profile => {
-    result[profile] = base.map((q, i) => ({
-      ...JSON.parse(JSON.stringify(q)),
-      id: q.id + '_' + profile,
-      weight: weights[profile][i] || 5
-    }));
-  });
-  return result;
-}
 
-function generateSampleEvals() {
-  return [
-    {
-      id: 'eval_001',
-      correlativo: 1,
-      fecha: '2025-03-15',
-      postulant: {nombre:'Carlos Muñoz Vega', rut:'15.234.567-8', edad:29, email:'cmunoz@mail.com', tel:'+56912345678', cargo:'guardia_tactico'},
-      scoreTest: 78.4,
-      scoreBio: 82.1,
-      scoreFinal: 79.1,
-      bioEnabled: true,
-      bioLog: [
-        {ts:'00:10',q:1,emotion:'neutral',conf:78},{ts:'00:20',q:2,emotion:'neutral',conf:82},
-        {ts:'00:30',q:3,emotion:'happy',conf:65},{ts:'00:40',q:4,emotion:'neutral',conf:88},
-        {ts:'00:50',q:5,emotion:'neutral',conf:71}
-      ],
-      bioMetrics:{predominant:'neutral',variability:15,alertPct:5},
-      answers:[],
-      resultado:'recomendado',
-      narrative:'El postulante demuestra un perfil psicométrico sólido para el cargo de Guardia Táctico. Presenta buena capacidad de respuesta ante situaciones de riesgo y control emocional adecuado. El análisis biométrico refuerza estas conclusiones con predominancia de expresiones neutras durante todo el test.'
-    },
-    {
-      id: 'eval_002',
-      correlativo: 2,
-      fecha: '2025-03-18',
-      postulant: {nombre:'María Fernández Torres', rut:'13.876.543-2', edad:34, email:'mftorres@mail.com', tel:'+56987654321', cargo:'supervisor'},
-      scoreTest: 62.3,
-      scoreBio: 55.0,
-      scoreFinal: 60.8,
-      bioEnabled: true,
-      bioLog: [
-        {ts:'00:10',q:1,emotion:'neutral',conf:60},{ts:'00:20',q:2,emotion:'fearful',conf:45},
-        {ts:'00:30',q:3,emotion:'neutral',conf:70},{ts:'00:40',q:4,emotion:'angry',conf:38},
-        {ts:'00:50',q:5,emotion:'neutral',conf:65}
-      ],
-      bioMetrics:{predominant:'neutral',variability:35,alertPct:25},
-      answers:[],
-      resultado:'riesgoso',
-      narrative:'La postulante presenta competencias de supervisión parcialmente desarrolladas. El test psicométrico arroja puntajes en el rango medio, con debilidades identificadas en manejo del estrés y toma de decisiones bajo presión. El análisis biométrico muestra presencia de emociones de alerta durante preguntas críticas, lo que sugiere estrés situacional elevado.'
-    },
-    {
-      id: 'eval_003',
-      correlativo: 3,
-      fecha: '2025-03-20',
-      postulant: {nombre:'Roberto Sánchez Díaz', rut:'11.456.789-3', edad:22, email:'rsanchez@mail.com', tel:'+56911223344', cargo:'guardia_estandar'},
-      scoreTest: 38.7,
-      scoreBio: 40.0,
-      scoreFinal: 39.1,
-      bioEnabled: false,
-      bioLog: [],
-      bioMetrics:null,
-      answers:[],
-      resultado:'no_recomendado',
-      narrative:'El postulante no alcanza los umbrales mínimos requeridos para el cargo de Guardia Estándar. Los resultados del test psicométrico revelan debilidades significativas en integridad, seguimiento de protocolos y manejo de situaciones de estrés. La evaluación biométrica no pudo realizarse por indisponibilidad de cámara.'
+  Object.keys(PROFILES).forEach(profile => {
+    // TODAS las 60 preguntas se habilitan para todos los perfiles equitativamente.
+    // El peso individual es 100% dividido en 60.
+    const individualWeight = 100 / baseQuestions.length; 
+    
+    result[profile] = baseQuestions.map(bq => {
+      const valA = bq.dir === 1 ? 1 : 5;
+      const valB = 3;
+      const valC = bq.dir === 1 ? 5 : 1;
+
+      const bioTarget = ['C', 'O', 'Q4'].includes(bq.dim) ? 'stress' : 
+                        ['M', 'Q1', 'Q3'].includes(bq.dim) ? 'cognitive' : 'baseline';
+
+      return {
+        id: `q${bq.id}_${profile}_${bq.dim}`,
+        text: bq.text,
+        type: 'multiple',
+        weight: parseFloat(individualWeight.toFixed(2)),
+        biometric_trigger: bioTarget,
+        options: [
+          { text: bq.opts[0], val: valA },
+          { text: bq.opts[1], val: valB },
+          { text: bq.opts[2], val: valC }
+        ]
+      };
+    });
+
+    // Ajuste milimétrico de redondeo para que siempre sume 100% exactos
+    let currentTotal = result[profile].reduce((acc, q) => acc + q.weight, 0);
+    if (currentTotal !== 100) {
+       const diff = 100 - currentTotal;
+       result[profile][0].weight = parseFloat((result[profile][0].weight + diff).toFixed(2));
     }
-  ];
+  });
+
+  return result;
 }
 
 // ================================================================
 // INIT
 // ================================================================
 function initApp() {
-  // Set date
   document.getElementById('reg-fecha').value = new Date().toLocaleDateString('es-CL', {
     year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'
   });
 
-  // Load or init data
-  if (!lsGet('initialized', false)) {
+  // Forzamos actualización de preguntas a la nueva lógica igualitaria sin borrar historial previo
+  if (!lsGet('initialized_v3_exigencia', false)) {
     lsSet('questions', generateSampleQuestions());
-    lsSet('evaluations', generateSampleEvals());
-    lsSet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:10});
-    lsSet('correlativo', 4);
+    
+    if (!lsGet('initialized', false)) {
+      lsSet('evaluations', []);
+      lsSet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:10});
+      lsSet('correlativo', 1);
+    }
+    
     lsSet('initialized', true);
+    lsSet('initialized_v3_exigencia', true);
   }
 
   loadConfig();
@@ -2020,10 +1976,11 @@ function initApp() {
 function loadConfig() {
   const cfg = lsGet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:10});
   const r1 = document.getElementById('cfg-umbral-rec');
-  const r2 = document.getElementById('cfg-umbral-rsk');
+  const r2 = document.getElementById('cfg-umbral-risk');
   const r3 = document.getElementById('cfg-bio-weight');
   const r4 = document.getElementById('cfg-bio-interval');
   if(r1) r1.value = cfg.umbraRec||70;
+  if(r2) r2.value = cfg.umbralRisk||50;
   if(r3) r3.value = cfg.bioWeight||20;
   if(r4) r4.value = cfg.bioInterval||10;
 }
@@ -2114,7 +2071,7 @@ function startEval() {
     cargo
   };
 
-  // Load questions
+  // Load questions dynamically from local storage
   const allQ = lsGet('questions', generateSampleQuestions());
   evalState.questions = allQ[cargo] || [];
   if(evalState.questions.length === 0) {
@@ -2128,7 +2085,6 @@ function startEval() {
   evalState.bioEnabled = false;
   evalState.startTime = new Date();
 
-  // Show bio step
   document.getElementById('eval-step-register').style.display = 'none';
   document.getElementById('eval-step-bio').style.display = 'block';
   initBiometricStep();
@@ -2138,7 +2094,6 @@ async function initBiometricStep() {
   const initStatus = document.getElementById('bio-init-status');
   const initText = document.getElementById('bio-init-text');
 
-  // Try to load face-api models
   try {
     if(typeof faceapi !== 'undefined') {
       initText.textContent = 'Cargando modelo de detección facial...';
@@ -2245,7 +2200,6 @@ function renderQuestion() {
 }
 
 function nextQuestion() {
-  // Capture answer
   const q = evalState.questions[evalState.currentQ];
   if(q.type === 'likert') {
     const sel = document.querySelector('input[name="likert_q"]:checked');
@@ -2257,7 +2211,6 @@ function nextQuestion() {
     }
   }
 
-  // Log biometric for this question
   logBioForQuestion(evalState.currentQ);
 
   if(evalState.currentQ < evalState.questions.length - 1) {
@@ -2297,7 +2250,6 @@ async function startBioDetection() {
         lastEmotions = det.expressions;
         renderEmotionDisplay(lastEmotions);
 
-        // Draw detection box
         const dims = faceapi.matchDimensions(canvas, video, true);
         const resized = faceapi.resizeResults(det, dims);
         const box = resized.detection.box;
@@ -2314,7 +2266,6 @@ async function startBioDetection() {
 
   evalState.bioDetectionInterval = setInterval(detectFace, 500);
 
-  // Log every N seconds
   const cfg = lsGet('config', {bioInterval:10});
   const interval = (cfg.bioInterval || 10) * 1000;
   evalState.bioInterval = setInterval(() => {
@@ -2344,7 +2295,6 @@ function logBioForQuestion(qIdx) {
   const mm = String(Math.floor(elapsed/60)).padStart(2,'0');
   const ss = String(elapsed%60).padStart(2,'0');
 
-  // Only add if not duplicate ts
   evalState.bioLog.push({
     ts: `${mm}:${ss}`,
     q: qIdx + 1,
@@ -2365,7 +2315,6 @@ function stopBioDetection() {
 function renderEmotionDisplay(emotions) {
   const cont = document.getElementById('emotion-display');
   if(!cont) return;
-  // Keep header
   let html = '<div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.1em">Emociones Detectadas</div>';
   EMOTIONS.forEach(e => {
     const val = emotions[e] ? Math.round(emotions[e]*100) : 0;
@@ -2388,7 +2337,6 @@ function renderEmotionDisplay(emotions) {
 function finishEval() {
   stopBioDetection();
 
-  // Calculate test score
   const questions = evalState.questions;
   let totalWeight = 0, earnedScore = 0;
 
@@ -2408,7 +2356,6 @@ function finishEval() {
 
   const scoreTest = totalWeight > 0 ? (earnedScore / totalWeight) * 100 : 0;
 
-  // Calculate bio score
   let scoreBio = null;
   let bioMetrics = null;
   if(evalState.bioEnabled && evalState.bioLog.length > 0) {
@@ -2423,18 +2370,24 @@ function finishEval() {
     const alertPct = total > 0 ? (alertCount/total)*100 : 0;
     const neutralPct = total > 0 ? (neutralPositive/total)*100 : 0;
 
-    // Unique emotion types used
     const uniqueEmotions = Object.values(emoCounts).filter(v=>v>0).length;
     const variability = Math.round((uniqueEmotions / EMOTIONS.length) * 100);
 
-    // Score: neutral/positive is good, alert is penalized
-    scoreBio = Math.max(0, Math.min(100, neutralPct * 0.8 + (100 - alertPct) * 0.2));
+    let stressPenalty = 0;
+    log.forEach(entry => {
+       const qObj = questions[entry.q - 1];
+       if (qObj && qObj.biometric_trigger === 'stress' && ALERT_EMOTIONS.includes(entry.emotion)) {
+           stressPenalty += 2; 
+       }
+    });
+
+    let baseBioScore = Math.max(0, Math.min(100, neutralPct * 0.8 + (100 - alertPct) * 0.2));
+    scoreBio = Math.max(0, baseBioScore - stressPenalty);
 
     const predominant = Object.entries(emoCounts).sort((a,b)=>b[1]-a[1])[0][0];
     bioMetrics = { predominant, variability, alertPct: Math.round(alertPct) };
   }
 
-  // Final score
   const cfg = lsGet('config', {bioWeight:20});
   const bioWeight = cfg.bioWeight || 20;
   const testWeight = 100 - bioWeight;
@@ -2446,10 +2399,14 @@ function finishEval() {
     scoreFinal = scoreTest;
   }
 
-  // Determine result
+  // --- LÓGICA DE EXIGENCIA ASCENDENTE POR PERFIL ---
+  const cargo = evalState.postulant.cargo;
+  const exigencyIncrement = EXIGENCY_MODIFIERS[cargo] || 0;
+
   const cfg2 = lsGet('config', {umbraRec:70, umbralRisk:50});
-  const umbralRec = cfg2.umbraRec || 70;
-  const umbralRisk = cfg2.umbralRisk || 50;
+  // Se suma el incremento del 5% proporcional al cargo
+  const umbralRec = (cfg2.umbraRec || 70) + exigencyIncrement;
+  const umbralRisk = (cfg2.umbralRisk || 50) + exigencyIncrement;
 
   let resultado;
   if(scoreFinal >= umbralRec) {
@@ -2460,10 +2417,8 @@ function finishEval() {
     resultado = 'no_recomendado';
   }
 
-  // Generate narrative
-  const narrative = generateNarrative(evalState.postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics);
+  const narrative = generateNarrative(evalState.postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics, umbralRec, umbralRisk);
 
-  // Save to history
   const correlativo = lsGet('correlativo', 1);
   const evalRecord = {
     id: 'eval_' + Date.now(),
@@ -2473,6 +2428,9 @@ function finishEval() {
     scoreTest: Math.round(scoreTest*10)/10,
     scoreBio: scoreBio !== null ? Math.round(scoreBio*10)/10 : null,
     scoreFinal: Math.round(scoreFinal*10)/10,
+    umbralRec,          // Guardamos el umbral para este reporte específico
+    umbralRisk,         // Guardamos el riesgo para este reporte específico
+    exigencyIncrement,  // Nivel de incremento
     bioEnabled: evalState.bioEnabled,
     bioLog: evalState.bioLog,
     bioMetrics,
@@ -2487,44 +2445,44 @@ function finishEval() {
   lsSet('evaluations', evals);
   lsSet('correlativo', correlativo + 1);
 
-  // Store last eval for PDF (Solo uso de sistema para modal administrativo)
   window._lastEval = evalRecord;
 
-  // Cambia la vista del Test a la vista final sin revelar puntajes
   document.getElementById('eval-step-test').style.display = 'none';
   document.getElementById('eval-step-results').style.display = 'block';
 
   window.scrollTo(0,0);
 }
 
-function generateNarrative(postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics) {
+function generateNarrative(postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics, umbralRec, umbralRisk) {
   const cargoName = PROFILES[postulant.cargo] || postulant.cargo;
-  let text = `<strong>${postulant.nombre}</strong> fue evaluado/a para el cargo de <strong>${cargoName}</strong> mediante la plataforma SPC-100. `;
+  let text = `<strong>${postulant.nombre}</strong> fue evaluado/a para el cargo de <strong>${cargoName}</strong> mediante la plataforma SPC-100 (Batería de 60 preguntas uniformes). `;
+
+  text += `Para este perfil, el sistema aplicó un nivel de exigencia escalado, estableciendo el umbral mínimo de aprobación óptima en <strong>${umbralRec}%</strong>. `;
 
   if(resultado === 'recomendado') {
-    text += `El perfil psicométrico del postulante es sólido y coherente con los requerimientos del cargo. `;
+    text += `El perfil psicométrico del postulante es sólido y supera las exigencias requeridas para este cargo. `;
   } else if(resultado === 'riesgoso') {
-    text += `El perfil psicométrico del postulante presenta áreas de mejora relevantes para el cargo postulado. Se sugiere evaluación adicional antes de tomar una decisión de contratación definitiva. `;
+    text += `El perfil psicométrico del postulante presenta áreas de mejora y se sitúa en una zona de riesgo (por debajo del ${umbralRec}% óptimo, pero sobre el piso de ${umbralRisk}%). Se sugiere evaluación adicional antes de tomar una decisión de contratación definitiva. `;
   } else {
-    text += `El perfil psicométrico del postulante no alcanza los estándares mínimos requeridos para el cargo de ${cargoName}. `;
+    text += `El perfil psicométrico del postulante no alcanza los estándares de exigencia (puntaje bajo el ${umbralRisk}%) requeridos específicamente para el nivel del cargo de ${cargoName}. `;
   }
 
-  text += `El puntaje del test psicométrico fue de <strong>${Math.round(scoreTest)}%</strong>. `;
+  text += `El puntaje del test psicométrico general fue de <strong>${Math.round(scoreTest)}%</strong>. `;
 
   if(scoreBio !== null && bioMetrics) {
     text += `El componente biométrico aportó un puntaje de <strong>${Math.round(scoreBio)}%</strong>. `;
     if(bioMetrics.alertPct > 30) {
-      text += `El análisis biométrico detectó una presencia significativa de emociones de alerta (${bioMetrics.alertPct}% del tiempo), incluyendo expresiones de miedo o tensión durante preguntas de manejo de riesgo, lo que podría indicar alta susceptibilidad al estrés operativo. `;
+      text += `El análisis detectó una presencia significativa de emociones de alerta (${bioMetrics.alertPct}% del tiempo), incluyendo expresiones de tensión durante preguntas focalizadas en factores de riesgo, indicando alta susceptibilidad al estrés operativo. `;
     } else if(bioMetrics.alertPct > 10) {
-      text += `El análisis biométrico detectó presencia moderada de emociones de alerta (${bioMetrics.alertPct}%), sugiriendo estrés situacional acotado. `;
+      text += `El análisis detectó presencia moderada de emociones de alerta (${bioMetrics.alertPct}%), sugiriendo estrés situacional acotado. `;
     } else {
-      text += `El análisis biométrico mostró predominancia de expresiones neutras y positivas, lo que refuerza la estabilidad emocional del postulante. `;
+      text += `El análisis biométrico validó una predominancia de expresiones neutras/estables, lo que refuerza la estabilidad emocional reportada en el test. `;
     }
   } else {
-    text += `La evaluación se realizó sin componente biométrico (cámara no disponible); el informe se califica en base al test psicométrico exclusivamente. `;
+    text += `La evaluación se realizó sin componente biométrico activo; el informe se sustenta en base psicométrica exclusivamente. `;
   }
 
-  text += `El puntaje final combinado es de <strong>${Math.round(scoreFinal)}%</strong>.`;
+  text += `El índice de adecuación final logrado es de <strong>${Math.round(scoreFinal)}%</strong>.`;
   return text;
 }
 
@@ -2541,7 +2499,6 @@ function resetEval() {
   document.getElementById('eval-step-test').style.display = 'none';
   document.getElementById('eval-step-results').style.display = 'none';
 
-  // Reset form
   ['reg-nombre','reg-rut','reg-edad','reg-fnac','reg-email','reg-tel'].forEach(id => {
     document.getElementById(id).value = '';
   });
@@ -2555,7 +2512,7 @@ function resetEval() {
 }
 
 // ================================================================
-// PDF REPORT (AHORA SOLO USO ADMIN)
+// PDF REPORT (ADMIN)
 // ================================================================
 function downloadReport() {
   const ev = window._lastEval;
@@ -2581,11 +2538,9 @@ function generatePDF(ev) {
     red: [239,68,68]
   };
 
-  // Header background
   doc.setFillColor(...colors.dark);
   doc.rect(0,0,W,35,'F');
 
-  // Logo text
   doc.setFillColor(...colors.blue);
   doc.rect(10,8,24,18,'F');
   doc.setTextColor(255,255,255);
@@ -2604,7 +2559,6 @@ function generatePDF(ev) {
 
   y = 45;
 
-  // Postulant data section
   doc.setFillColor(20,28,46);
   doc.rect(10, y-5, W-20, 8, 'F');
   doc.setTextColor(...colors.light);
@@ -2636,7 +2590,6 @@ function generatePDF(ev) {
 
   y += 4;
 
-  // Result banner
   let bannerColor = ev.resultado === 'recomendado' ? colors.green :
                     ev.resultado === 'riesgoso' ? colors.amber : colors.red;
 
@@ -2653,16 +2606,15 @@ function generatePDF(ev) {
   };
   doc.text(verdictMap[ev.resultado]||'', W/2, y+8, {align:'center'});
   doc.setFontSize(16);
-  doc.text(`PUNTAJE FINAL: ${ev.scoreFinal}%`, W/2, y+16, {align:'center'});
+  doc.text(`PUNTAJE FINAL LOGRADO: ${ev.scoreFinal}%`, W/2, y+16, {align:'center'});
   y += 28;
 
-  // Score breakdown
   doc.setFillColor(20,28,46);
   doc.rect(10,y,W-20,8,'F');
   doc.setTextColor(...colors.light);
   doc.setFont('helvetica','bold');
   doc.setFontSize(9);
-  doc.text('DESGLOSE DE PUNTAJES', 14, y+5);
+  doc.text('DESGLOSE DE PUNTAJES Y EXIGENCIA', 14, y+5);
   y += 12;
 
   doc.setTextColor(40,40,60);
@@ -2671,14 +2623,15 @@ function generatePDF(ev) {
   const scores = [
     ['Componente Test Psicométrico (80%):', `${ev.scoreTest}%`],
     ['Componente Biométrico (20%):', ev.scoreBio !== null ? `${ev.scoreBio}%` : 'N/A — Sin validación biométrica'],
-    ['Puntaje Final Combinado:', `${ev.scoreFinal}%`]
+    ['Índice de Adecuación Final:', `${ev.scoreFinal}%`],
+    ['Umbral de Aprobación Exigido para el Cargo:', `${ev.umbralRec || 70}%`]
   ];
   scores.forEach(row => {
     doc.setFont('helvetica','bold');
     doc.text(row[0], 12, y);
     doc.setFont('helvetica','normal');
     doc.setFillColor(...(row[0].includes('Final') ? bannerColor : [29,78,216]));
-    doc.setTextColor(...(row[0].includes('Final') ? bannerColor : colors.blue));
+    doc.setTextColor(...(row[0].includes('Final') || row[0].includes('Umbral') ? bannerColor : colors.blue));
     doc.text(row[1], W-20, y, {align:'right'});
     doc.setTextColor(40,40,60);
     y += 7;
@@ -2686,7 +2639,6 @@ function generatePDF(ev) {
 
   y += 4;
 
-  // Biometric section
   if(ev.bioEnabled && ev.bioMetrics) {
     doc.setFillColor(20,28,46);
     doc.rect(10,y,W-20,8,'F');
@@ -2711,12 +2663,11 @@ function generatePDF(ev) {
       y += 6;
     });
 
-    // Timeline excerpt
     if(ev.bioLog.length > 0) {
       y += 3;
       doc.setFont('helvetica','bold');
       doc.setFontSize(8);
-      doc.text('LOG CRONOLÓGICO (extracto):', 12, y);
+      doc.text('LOG CRONOLÓGICO Y CORRELACIÓN DE PREGUNTA:', 12, y);
       y += 5;
       doc.setFont('helvetica','normal');
       doc.setFontSize(7);
@@ -2745,7 +2696,6 @@ function generatePDF(ev) {
     y += 16;
   }
 
-  // Narrative
   if(y > H - 60) { doc.addPage(); y = 15; }
 
   doc.setFillColor(20,28,46);
@@ -2764,7 +2714,6 @@ function generatePDF(ev) {
   doc.text(lines, 12, y);
   y += lines.length * 5 + 5;
 
-  // Footer
   const footerY = H - 20;
   doc.setDrawColor(...colors.steel);
   doc.line(10, footerY, W-10, footerY);
@@ -2788,7 +2737,6 @@ function renderHistorial() {
 
   let evals = lsGet('evaluations', []);
 
-  // Apply filters
   const fPerfil = document.getElementById('filter-perfil')?.value || '';
   const fResult = document.getElementById('filter-resultado')?.value || '';
   const fDesde = document.getElementById('filter-desde')?.value || '';
@@ -2857,6 +2805,7 @@ function viewReport(id) {
       <div style="text-align:center;padding:1.5rem;background:var(--bg-surface);border-radius:6px;margin-bottom:1rem">
         <div style="font-size:2rem;font-weight:700;font-family:var(--font-display)">${verdictMap[ev.resultado]||ev.resultado}</div>
         <div style="font-size:2.5rem;font-weight:700;font-family:var(--font-display);color:${ev.resultado==='recomendado'?'var(--accent-green)':ev.resultado==='riesgoso'?'var(--accent-amber)':'var(--accent-red)'}">${ev.scoreFinal}%</div>
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem">Umbral Exigido: ${ev.umbralRec || 70}%</div>
       </div>
       <div class="report-row"><span class="report-row-label">Test Psicométrico (80%)</span><span class="report-row-value">${ev.scoreTest}%</span></div>
       <div class="report-row"><span class="report-row-label">Biométrico (20%)</span><span class="report-row-value">${ev.scoreBio!==null&&ev.scoreBio!==undefined?ev.scoreBio+'%':'N/A'}</span></div>
@@ -2919,7 +2868,6 @@ function clearFilters() {
 // ADMIN: BATERIAS
 // ================================================================
 function renderBateriasAdmin() {
-  // Render profile selector
   const sel = document.getElementById('profile-selector-admin');
   sel.innerHTML = Object.entries(PROFILES).map(([key,label]) =>
     `<button class="profile-btn ${key===currentAdminProfile?'active':''}" onclick="selectAdminProfile('${key}')">${label}</button>`
@@ -2966,7 +2914,7 @@ function toggleAddQForm() {
   if(form.classList.contains('open')) {
     document.getElementById('nq-text').value = '';
     document.getElementById('nq-type').value = 'likert';
-    document.getElementById('nq-weight').value = '6.67';
+    document.getElementById('nq-weight').value = '1.67';
     updateNewQOptions();
   }
 }
@@ -2997,7 +2945,7 @@ function addOptionField() {
 function saveNewQuestion() {
   const text = document.getElementById('nq-text').value.trim();
   const type = document.getElementById('nq-type').value;
-  const weight = parseFloat(document.getElementById('nq-weight').value) || 5;
+  const weight = parseFloat(document.getElementById('nq-weight').value) || 1.67;
 
   if(!text) { showToast('⚠️ Ingrese el texto de la pregunta'); return; }
 
@@ -3071,7 +3019,7 @@ function switchAdminTab(tab) {
 function saveConfig() {
   const cfg = {
     umbraRec: parseInt(document.getElementById('cfg-umbral-rec').value) || 70,
-    umbralRisk: parseInt(document.getElementById('cfg-umbral-rsk')?.value||'50') || 50,
+    umbralRisk: parseInt(document.getElementById('cfg-umbral-risk')?.value||'50') || 50,
     bioWeight: parseInt(document.getElementById('cfg-bio-weight').value) || 20,
     bioInterval: parseInt(document.getElementById('cfg-bio-interval').value) || 10
   };
@@ -3100,17 +3048,6 @@ function clearAllData() {
   showToast('Historial eliminado');
 }
 
-function reloadSampleData() {
-  if(!confirm('¿Recargar los datos de muestra? Se agregarán los 3 registros de ejemplo al historial actual.')) return;
-  const evals = lsGet('evaluations', []);
-  const samples = generateSampleEvals();
-  const allIds = evals.map(e => e.id);
-  samples.forEach(s => { if(!allIds.includes(s.id)) evals.push(s); });
-  lsSet('evaluations', evals);
-  renderHistorial();
-  showToast('✅ Datos de muestra recargados');
-}
-
 // ================================================================
 // MODAL
 // ================================================================
@@ -3118,7 +3055,6 @@ function closeModal(id) {
   document.getElementById(id).style.display = 'none';
 }
 
-// Close on overlay click
 document.addEventListener('click', e => {
   if(e.target.classList.contains('modal-overlay')) {
     e.target.style.display = 'none';
