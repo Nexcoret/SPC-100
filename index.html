@@ -1346,6 +1346,118 @@ select option { background: var(--bg-surface); }
 }
 
 .option-item input { flex: 1; }
+
+/* ─── ENTREVISTA MODAL ─── */
+.entrevista-modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.entrevista-item {
+  margin-bottom: 1.2rem;
+}
+
+.entrevista-item label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-blue-glow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.entrevista-item label::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  flex-shrink: 0;
+}
+
+.entrevista-item textarea {
+  resize: vertical;
+  min-height: 72px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.entrevista-item textarea:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.12);
+}
+
+.entrevista-saved-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  background: rgba(16,185,129,0.12);
+  color: var(--accent-green);
+  border: 1px solid rgba(16,185,129,0.3);
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.btn-entrevista {
+  background: rgba(14,165,233,0.12);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(14,165,233,0.3);
+}
+
+.btn-entrevista:hover {
+  background: rgba(14,165,233,0.22);
+  border-color: var(--accent-cyan);
+}
+
+.report-entrevista-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.report-entrevista-cell {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.8rem;
+}
+
+.report-entrevista-cell-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-blue-glow);
+  margin-bottom: 4px;
+}
+
+.report-entrevista-cell-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .report-entrevista-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -1763,6 +1875,54 @@ select option { background: var(--bg-surface); }
   </div>
 </div>
 
+<div class="modal-overlay" id="entrevista-modal" style="display:none">
+  <div class="entrevista-modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">🗣️ Entrevista Personal</div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);margin-top:4px;letter-spacing:0.08em" id="entrevista-modal-subtitle">Registro de comentarios del evaluador</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('entrevista-modal')">×</button>
+    </div>
+
+    <div class="alert-box alert-info" style="margin-bottom:1.5rem;font-size:0.8rem">
+      ℹ️ Complete los campos observados durante la entrevista personal. Los comentarios quedarán asociados al registro y se incluirán en el informe PDF.
+    </div>
+
+    <input type="hidden" id="entrevista-eval-id">
+
+    <div class="entrevista-item">
+      <label>Disposición</label>
+      <textarea id="ent-disposicion" placeholder="Observaciones sobre actitud y disposición general del postulante…"></textarea>
+    </div>
+    <div class="entrevista-item">
+      <label>Facilidad para Aprender</label>
+      <textarea id="ent-aprender" placeholder="Observaciones sobre capacidad de comprensión, adaptabilidad y aprendizaje…"></textarea>
+    </div>
+    <div class="entrevista-item">
+      <label>Compromiso</label>
+      <textarea id="ent-compromiso" placeholder="Observaciones sobre el nivel de compromiso, responsabilidad y vocación…"></textarea>
+    </div>
+    <div class="entrevista-item">
+      <label>Capacidad para Tomar Decisiones</label>
+      <textarea id="ent-decisiones" placeholder="Observaciones sobre criterio, autonomía y calidad de toma de decisiones…"></textarea>
+    </div>
+    <div class="entrevista-item">
+      <label>Resolución de Conflictos</label>
+      <textarea id="ent-conflictos" placeholder="Observaciones sobre manejo de conflictos, tolerancia y estrategias de resolución…"></textarea>
+    </div>
+    <div class="entrevista-item">
+      <label>Otros</label>
+      <textarea id="ent-otros" placeholder="Cualquier otra observación relevante…"></textarea>
+    </div>
+
+    <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1rem;border-top:1px solid var(--border);padding-top:1.5rem">
+      <button class="btn btn-secondary" onclick="closeModal('entrevista-modal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEntrevista()">💾 Guardar Comentarios</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ================================================================
 // CONSTANTS
@@ -1807,6 +1967,88 @@ const EXIGENCY_MODIFIERS = {
 };
 
 // ================================================================
+// MATRIZ DE PONDERACIÓN DIFERENCIADA 16PF-5
+// Fundamentación psicométrica por factor y perfil.
+// Escala de multiplicadores: 0.5 (neutro) | 1.0 (base) | 1.5 (secundario) | 2.0 (crítico)
+// Fuente: Manual 16PF-5 (Cattell, 1993); competencias de seguridad privada (DTO 93/2015 Chile)
+// ================================================================
+const PF16_WEIGHT_MATRIX = {
+  //  Factor: [ge,   gt,   jg,   sv,   js,   ac]
+  //          guardia_estandar | guardia_tactico | jefe_grupo | supervisor | jefe_seguridad | administrador_contrato
+  A:  { guardia_estandar:0.8,  guardia_tactico:1.0, jefe_grupo:1.5, supervisor:1.5, jefe_seguridad:1.5, administrador_contrato:2.0 },
+  C:  { guardia_estandar:2.0,  guardia_tactico:2.0, jefe_grupo:2.0, supervisor:1.8, jefe_seguridad:1.8, administrador_contrato:1.2 },
+  E:  { guardia_estandar:0.8,  guardia_tactico:1.0, jefe_grupo:2.0, supervisor:2.0, jefe_seguridad:2.0, administrador_contrato:1.8 },
+  F:  { guardia_estandar:0.5,  guardia_tactico:0.8, jefe_grupo:1.0, supervisor:1.2, jefe_seguridad:1.2, administrador_contrato:1.5 },
+  G:  { guardia_estandar:2.0,  guardia_tactico:2.0, jefe_grupo:1.8, supervisor:1.8, jefe_seguridad:1.8, administrador_contrato:1.5 },
+  H:  { guardia_estandar:1.0,  guardia_tactico:1.5, jefe_grupo:1.8, supervisor:2.0, jefe_seguridad:2.0, administrador_contrato:2.0 },
+  I:  { guardia_estandar:0.5,  guardia_tactico:0.5, jefe_grupo:0.8, supervisor:1.0, jefe_seguridad:1.0, administrador_contrato:1.2 },
+  L:  { guardia_estandar:1.5,  guardia_tactico:1.5, jefe_grupo:1.2, supervisor:1.0, jefe_seguridad:1.0, administrador_contrato:0.8 },
+  M:  { guardia_estandar:0.5,  guardia_tactico:0.5, jefe_grupo:1.0, supervisor:1.2, jefe_seguridad:1.5, administrador_contrato:1.8 },
+  N:  { guardia_estandar:1.0,  guardia_tactico:1.0, jefe_grupo:1.2, supervisor:1.5, jefe_seguridad:1.5, administrador_contrato:2.0 },
+  O:  { guardia_estandar:2.0,  guardia_tactico:2.0, jefe_grupo:1.5, supervisor:1.5, jefe_seguridad:1.5, administrador_contrato:1.0 },
+  Q1: { guardia_estandar:0.5,  guardia_tactico:0.8, jefe_grupo:1.0, supervisor:1.2, jefe_seguridad:1.5, administrador_contrato:2.0 },
+  Q2: { guardia_estandar:1.0,  guardia_tactico:0.8, jefe_grupo:1.2, supervisor:1.2, jefe_seguridad:1.2, administrador_contrato:1.0 },
+  Q3: { guardia_estandar:2.0,  guardia_tactico:2.0, jefe_grupo:1.8, supervisor:1.8, jefe_seguridad:2.0, administrador_contrato:1.8 },
+  Q4: { guardia_estandar:2.0,  guardia_tactico:2.0, jefe_grupo:1.8, supervisor:1.8, jefe_seguridad:1.8, administrador_contrato:1.2 }
+};
+
+// ================================================================
+// UMBRALES DE RECHAZO AUTOMÁTICO POR FACTOR CRÍTICO (escala 1-5 → umbral en puntos 1-5)
+// Si el puntaje promedio del factor supera el umbral, se activa veto psicométrico.
+// Factores de dirección negativa (alta puntuación = rasgo indeseable para el cargo).
+// ================================================================
+const CRITICAL_REJECTION_THRESHOLDS = {
+  // [factor]: { perfil: umbralMaximo (sobre escala 1-5), label }
+  // Umbral = si puntaje_factor_stanine >= umbral → VETO
+  O:  { // Ansiedad/Culpabilidad — Factor crítico negativo universal en seguridad
+    guardia_estandar:3.5, guardia_tactico:3.5, jefe_grupo:3.8, supervisor:3.8, jefe_seguridad:4.0, administrador_contrato:4.2,
+    label: 'Ansiedad y Culpabilidad (O)', competencia: 'Estabilidad emocional bajo presión'
+  },
+  Q4: { // Tensión Ergica — baja tolerancia a la frustración
+    guardia_estandar:3.5, guardia_tactico:3.5, jefe_grupo:3.8, supervisor:4.0, jefe_seguridad:4.0, administrador_contrato:4.5,
+    label: 'Tensión/Baja Tolerancia (Q4)', competencia: 'Tolerancia a la frustración y estrés operativo'
+  },
+  L:  { // Vigilancia/Suspicacia — vulnerabilidad a manipulación si es excesiva
+    guardia_estandar:3.8, guardia_tactico:4.0, jefe_grupo:4.2, supervisor:4.5, jefe_seguridad:4.5, administrador_contrato:4.5,
+    label: 'Suspicacia Excesiva (L)', competencia: 'Confianza funcional y trabajo en equipo'
+  },
+  G_inv: { // Baja Normatividad (G invertido) — desacato a normas
+    guardia_estandar:2.5, guardia_tactico:2.5, jefe_grupo:2.8, supervisor:3.0, jefe_seguridad:3.0, administrador_contrato:3.2,
+    label: 'Baja Normatividad (G-)', competencia: 'Respeto a protocolos y normativa de seguridad',
+    invertedFactor: 'G'  // Se usa el score INVERTIDO de G (5 - score_G) para este veto
+  }
+};
+
+// Descripciones psicométricas por factor para el informe
+const PF16_FACTOR_DESCRIPTIONS = {
+  A:  { nombre: 'Afabilidad (A)',          poloAlto: 'Cálido, participativo, expresivo',         poloBajo: 'Reservado, impersonal, distante' },
+  C:  { nombre: 'Estabilidad Emocional (C)', poloAlto: 'Estable emocionalmente, maduro',         poloBajo: 'Reactivo, impulsivo, inestable' },
+  E:  { nombre: 'Dominancia (E)',           poloAlto: 'Dominante, asertivo, competitivo',         poloBajo: 'Deferente, cooperador, evita conflictos' },
+  F:  { nombre: 'Animación (F)',            poloAlto: 'Animado, impulsivo, vivaz',                poloBajo: 'Serio, cauteloso, silencioso' },
+  G:  { nombre: 'Atención a Normas (G)',    poloAlto: 'Normativo, concienzudo, íntegro',          poloBajo: 'Expeditivo, no conformista, flexible' },
+  H:  { nombre: 'Atrevimiento Social (H)',  poloAlto: 'Atrevido, socialmente seguro',             poloBajo: 'Tímido, temeroso, sensible al peligro' },
+  I:  { nombre: 'Sensibilidad (I)',         poloAlto: 'Sensible, estético, intuitivo',            poloBajo: 'Utilitario, objetivo, sin sentimentalismos' },
+  L:  { nombre: 'Vigilancia (L)',           poloAlto: 'Vigilante, suspicaz, escéptico',           poloBajo: 'Confiado, sin suspicacias, adaptable' },
+  M:  { nombre: 'Abstracción (M)',          poloAlto: 'Abstraído, imaginativo, creativo',         poloBajo: 'Concreto, orientado a la realidad' },
+  N:  { nombre: 'Privacidad (N)',           poloAlto: 'Privado, discreto, no transparente',       poloBajo: 'Abierto, sin pretensiones, genuino' },
+  O:  { nombre: 'Aprensión (O)',            poloAlto: 'Aprensivo, ansioso, culpabilidad',         poloBajo: 'Seguro, despreocupado, satisfecho' },
+  Q1: { nombre: 'Apertura al Cambio (Q1)', poloAlto: 'Abierto al cambio, experimenta',           poloBajo: 'Tradicional, respeta lo establecido' },
+  Q2: { nombre: 'Autosuficiencia (Q2)',     poloAlto: 'Autosuficiente, solitario, independiente', poloBajo: 'Orientado al grupo, afiliativo, seguidor' },
+  Q3: { nombre: 'Perfeccionismo (Q3)',      poloAlto: 'Perfeccionista, organizado, disciplinado', poloBajo: 'Flexible, tolerante con el desorden' },
+  Q4: { nombre: 'Tensión (Q4)',             poloAlto: 'Tenso, frustrable, irritable',             poloBajo: 'Relajado, paciente, compuesto' }
+};
+
+// Competencias clave por perfil para el análisis psicométrico narrativo
+const PROFILE_COMPETENCIES = {
+  guardia_estandar:      ['Estabilidad Emocional (C)', 'Atención a Normas (G)', 'Aprensión (O−)', 'Tensión (Q4−)', 'Perfeccionismo (Q3)'],
+  guardia_tactico:       ['Estabilidad Emocional (C)', 'Atención a Normas (G)', 'Atrevimiento Social (H)', 'Tensión (Q4−)', 'Perfeccionismo (Q3)'],
+  jefe_grupo:            ['Dominancia (E)', 'Estabilidad Emocional (C)', 'Atrevimiento Social (H)', 'Atención a Normas (G)', 'Perfeccionismo (Q3)'],
+  supervisor:            ['Dominancia (E)', 'Afabilidad (A)', 'Atrevimiento Social (H)', 'Privacidad (N)', 'Perfeccionismo (Q3)'],
+  jefe_seguridad:        ['Dominancia (E)', 'Atrevimiento Social (H)', 'Apertura al Cambio (Q1)', 'Abstracción (M)', 'Perfeccionismo (Q3)'],
+  administrador_contrato:['Afabilidad (A)', 'Apertura al Cambio (Q1)', 'Privacidad (N)', 'Animación (F)', 'Abstracción (M)']
+};
+
+// ================================================================
 // STATE
 // ================================================================
 let currentView = 'home';
@@ -1841,93 +2083,117 @@ function lsSet(key, val) {
 }
 
 // ================================================================
-// DYNAMIC QUESTION GENERATOR (16PF-5)
+// DYNAMIC QUESTION GENERATOR (16PF-5) — Ponderación Diferenciada
+// Cada pregunta recibe peso = multiplicador_factor_por_perfil normalizado
+// de modo que la suma total de pesos por perfil == 100.
 // ================================================================
 function generateSampleQuestions() {
   const baseQuestions = [
-    { id: 1, dim: 'A', dir: 1, text: 'En un negocio, me resultaría más interesante ocuparme de:', opts: ['A. la maquinaria o los registros', 'B. ?', 'C. entrevistar y conversar con personas'] },
-    { id: 31, dim: 'A', dir: -1, text: 'Preferiría:', opts: ['A. trabajar en una oficina atendiendo personas', 'B. ?', 'C. ser arquitecto/a y dibujar planos en un despacho tranquilo'] },
-    { id: 63, dim: 'A', dir: 1, text: 'No me siento cómodo/a al expresar sentimientos de cariño o afecto.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 96, dim: 'A', dir: -1, text: 'Disfruto estar con personas que expresan abiertamente sus emociones.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 2, dim: 'C', dir: -1, text: 'Por lo general, me acuesto conforme con cómo salió mi día.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 32, dim: 'C', dir: 1, text: 'Cuando varias pequeñas cosas empiezan a salir mal una tras otra:', opts: ['A. siento que no puedo controlarlas', 'B. ?', 'C. sigo adelante con naturalidad'] },
-    { id: 64, dim: 'C', dir: -1, text: 'En mi vida personal casi siempre logro las metas que me propongo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 97, dim: 'C', dir: -1, text: 'No dejo que las pequeñas cosas me depriman.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
-    { id: 3, dim: 'E', dir: -1, text: 'Si noto que el razonamiento de otra persona es incorrecto, normalmente:', opts: ['A. se lo hago notar', 'B. ?', 'C. lo dejo pasar'] },
-    { id: 36, dim: 'E', dir: -1, text: 'En situaciones que dependen de mí, me siento bien dando instrucciones a otros.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 66, dim: 'E', dir: -1, text: 'Si alguien hace algo incorrecto, normalmente se lo digo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 102, dim: 'E', dir: 1, text: 'Si me perdiera en una ciudad y mis amigos no estuvieran de acuerdo con el camino que propongo:', opts: ['A. no discutiría y los seguiría', 'B. ?', 'C. les diría que creo que mi camino es mejor'] },
-    { id: 6, dim: 'F', dir: 1, text: 'Me atrae más pasar la tarde en una actividad tranquila que asistir a una reunión muy animada.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 37, dim: 'F', dir: 1, text: 'Preferiría pasar una tarde:', opts: ['A. haciendo con calma algo que me gusta', 'B. ?', 'C. en una fiesta animada'] },
-    { id: 68, dim: 'F', dir: -1, text: 'Generalmente disfruto estar en medio de mucha actividad y emoción.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 103, dim: 'F', dir: -1, text: 'La gente me ve como una persona animada y despreocupada.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 5, dim: 'G', dir: -1, text: 'Al tomar una decisión, suelo pensar con cuidado en lo que es correcto y justo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 40, dim: 'G', dir: -1, text: 'Valoro y respeto más las normas y los buenos modales que una vida cómoda.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 72, dim: 'G', dir: 1, text: 'Me irrita que la gente insista en que siga hasta las menores normas de seguridad.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 106, dim: 'G', dir: 1, text: 'Autoridades intentan muchas veces impedirme hacer lo que quiero.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 41, dim: 'H', dir: 1, text: 'Me siento tímido/a y retraído/a al hacer amistades con personas desconocidas.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 71, dim: 'H', dir: 1, text: 'Me desconcierta convertirme de pronto en el centro de atención en un grupo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 105, dim: 'H', dir: 1, text: 'Siempre tengo que esforzarme por vencer mi timidez.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 137, dim: 'H', dir: -1, text: 'Cuando entro a un grupo nuevo, normalmente me adapto rápido.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 8, dim: 'I', dir: 1, text: 'Me parecería más interesante ser:', opts: ['A. ingeniero/a en construcción', 'B. ?', 'C. autor/a de obras teatrales'] },
-    { id: 42, dim: 'I', dir: -1, text: 'Si pudiera, preferiría practicar:', opts: ['A. esgrima o danza', 'B. ?', 'C. tenis o lucha libre'] },
-    { id: 110, dim: 'I', dir: 1, text: 'Me interesan las cosas mecánicas y se me da bastante bien arreglarlas.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 138, dim: 'I', dir: 1, text: 'Prefiero leer relatos duros o de acción realista antes que novelas sentimentales e imaginativas.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 13, dim: 'L', dir: -1, text: 'Muchas personas te perjudicarían si eso les ayudara a progresar.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 45, dim: 'L', dir: 1, text: 'La gente suele formarse una opinión de mí demasiado rápido.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
-    { id: 78, dim: 'L', dir: 1, text: 'Cuando el trabajo se vuelve fácil, la gente tiende a hacerse floja.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
-    { id: 112, dim: 'L', dir: -1, text: 'Da la impresión de que no puedo confiar en más de la mitad de la gente que voy conociendo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 17, dim: 'M', dir: 1, text: '¿Mis pensamientos son demasiado complejos para que muchas personas los comprendan?', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
-    { id: 46, dim: 'M', dir: 1, text: 'Soy de las personas que:', opts: ['A. hacen siempre las cosas prácticas', 'B. ?', 'C. imaginan o reflexionan sobre sí mismas'] },
-    { id: 81, dim: 'M', dir: 1, text: 'Presto más atención a:', opts: ['A. las cosas prácticas que me rodean', 'B. ?', 'C. mis pensamientos y mi imaginación'] },
-    { id: 114, dim: 'M', dir: 1, text: 'A menudo los demás dicen que mis ideas son realistas y prácticas.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 15, dim: 'N', dir: 1, text: 'Hablo de mis sentimientos:', opts: ['A. con facilidad si noto interés', 'B. ?', 'C. solo cuando no me queda otra opción'] },
-    { id: 50, dim: 'N', dir: -1, text: 'Suelo ser reservado/a y guardar mis problemas para mí.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 84, dim: 'N', dir: 1, text: 'Al tratar con la gente, es mejor:', opts: ['A. hablar con total franqueza', 'B. ?', 'C. no mostrar todas tus cartas'] },
-    { id: 117, dim: 'N', dir: 1, text: 'Me resulta fácil hablar de mi vida, incluso de aspectos muy personales.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 19, dim: 'O', dir: 1, text: 'Pienso en cosas que debí haber dicho y no dije.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
-    { id: 54, dim: 'O', dir: -1, text: 'Me altero más que otras personas cuando veo a otros enojados entre sí.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 82, dim: 'O', dir: 1, text: 'Cuando me critican delante de otros, casi nunca me siento muy herido/a.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
-    { id: 119, dim: 'O', dir: 1, text: 'Tiendo a ser muy sensible y a preocuparme mucho por algo que hice.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
-    { id: 24, dim: 'Q1', dir: 1, text: 'Si tuviera que construir algo, seguiría las instrucciones al pie de la letra:', opts: ['A. verdadero', 'B. ?', 'C. falso, podría salir algo más interesante'] },
-    { id: 55, dim: 'Q1', dir: 1, text: 'Este mundo necesita más personas íntegras y constantes.', opts: ['A. Verdadero', 'B. ?', 'C. más reformadores con ideas nuevas'] },
-    { id: 86, dim: 'Q1', dir: 1, text: 'Me agrada más la gente que:', opts: ['A. es estable y tradicional', 'B. ?', 'C. revisa seriamente su manera de ver la vida'] },
-    { id: 149, dim: 'Q1', dir: 1, text: 'Prefiero probar maneras nuevas de hacer las cosas antes que seguir caminos conocidos.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 25, dim: 'Q2', dir: 1, text: 'Al construir o hacer algo, preferiría trabajar:', opts: ['A. con otras personas', 'B. ?', 'C. solo/a'] },
-    { id: 56, dim: 'Q2', dir: 1, text: 'Prefiero los juegos en los que:', opts: ['A. se juega en equipo', 'B. ?', 'C. cada uno juega por su cuenta'] },
-    { id: 89, dim: 'Q2', dir: -1, text: 'Suelo terminar mejor las cosas cuando trabajo solo/a que cuando trabajo con otros.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 123, dim: 'Q2', dir: 1, text: 'Prefiero almorzar:', opts: ['A. con otras personas', 'B. Neutral', 'C. solo/a'] },
-    { id: 26, dim: 'Q3', dir: 1, text: 'Me gusta planificar con anticipación para no perder tiempo entre tareas.', opts: ['A. Raras veces', 'B. ?', 'C. A menudo'] },
-    { id: 57, dim: 'Q3', dir: 1, text: 'A menudo dejo algunas cosas al azar en lugar de hacer planes muy detallados.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 93, dim: 'Q3', dir: -1, text: 'Soy algo perfeccionista y me gusta que las cosas se hagan bien.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 154, dim: 'Q3', dir: 1, text: 'Yo pienso que:', opts: ['A. algunos trabajos no requieren tanto cuidado', 'B. ?', 'C. cualquier trabajo debe hacerse bien'] },
-    { id: 28, dim: 'Q4', dir: -1, text: 'Cuando estoy tenso/a, hasta las cosas pequeñas me irritan.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 60, dim: 'Q4', dir: 1, text: 'Si alguien me interrumpe cuando estoy haciendo algo, no me afecta demasiado.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 94, dim: 'Q4', dir: 1, text: 'Cuando debo hacer una larga fila, no me pongo tan nervioso/a como la mayoría.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
-    { id: 124, dim: 'Q4', dir: 1, text: 'Soy paciente con la gente, incluso cuando no es cortés ni considerada conmigo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] }
+    { id: 1,   dim: 'A',  dir: 1,  text: 'En un negocio, me resultaría más interesante ocuparme de:', opts: ['A. la maquinaria o los registros', 'B. ?', 'C. entrevistar y conversar con personas'] },
+    { id: 31,  dim: 'A',  dir: -1, text: 'Preferiría:', opts: ['A. trabajar en una oficina atendiendo personas', 'B. ?', 'C. ser arquitecto/a y dibujar planos en un despacho tranquilo'] },
+    { id: 63,  dim: 'A',  dir: 1,  text: 'No me siento cómodo/a al expresar sentimientos de cariño o afecto.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 96,  dim: 'A',  dir: -1, text: 'Disfruto estar con personas que expresan abiertamente sus emociones.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 2,   dim: 'C',  dir: -1, text: 'Por lo general, me acuesto conforme con cómo salió mi día.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 32,  dim: 'C',  dir: 1,  text: 'Cuando varias pequeñas cosas empiezan a salir mal una tras otra:', opts: ['A. siento que no puedo controlarlas', 'B. ?', 'C. sigo adelante con naturalidad'] },
+    { id: 64,  dim: 'C',  dir: -1, text: 'En mi vida personal casi siempre logro las metas que me propongo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 97,  dim: 'C',  dir: -1, text: 'No dejo que las pequeñas cosas me depriman.', opts: ['A. Verdadero', 'B. Neutral', 'C. Falso'] },
+    { id: 3,   dim: 'E',  dir: -1, text: 'Si noto que el razonamiento de otra persona es incorrecto, normalmente:', opts: ['A. se lo hago notar', 'B. ?', 'C. lo dejo pasar'] },
+    { id: 36,  dim: 'E',  dir: -1, text: 'En situaciones que dependen de mí, me siento bien dando instrucciones a otros.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 66,  dim: 'E',  dir: -1, text: 'Si alguien hace algo incorrecto, normalmente se lo digo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 102, dim: 'E',  dir: 1,  text: 'Si me perdiera en una ciudad y mis amigos no estuvieran de acuerdo con el camino que propongo:', opts: ['A. no discutiría y los seguiría', 'B. ?', 'C. les diría que creo que mi camino es mejor'] },
+    { id: 6,   dim: 'F',  dir: 1,  text: 'Me atrae más pasar la tarde en una actividad tranquila que asistir a una reunión muy animada.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 37,  dim: 'F',  dir: 1,  text: 'Preferiría pasar una tarde:', opts: ['A. haciendo con calma algo que me gusta', 'B. ?', 'C. en una fiesta animada'] },
+    { id: 68,  dim: 'F',  dir: -1, text: 'Generalmente disfruto estar en medio de mucha actividad y emoción.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 103, dim: 'F',  dir: -1, text: 'La gente me ve como una persona animada y despreocupada.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 5,   dim: 'G',  dir: -1, text: 'Al tomar una decisión, suelo pensar con cuidado en lo que es correcto y justo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 40,  dim: 'G',  dir: -1, text: 'Valoro y respeto más las normas y los buenos modales que una vida cómoda.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 72,  dim: 'G',  dir: 1,  text: 'Me irrita que la gente insista en que siga hasta las menores normas de seguridad.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 106, dim: 'G',  dir: 1,  text: 'Autoridades intentan muchas veces impedirme hacer lo que quiero.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 41,  dim: 'H',  dir: 1,  text: 'Me siento tímido/a y retraído/a al hacer amistades con personas desconocidas.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 71,  dim: 'H',  dir: 1,  text: 'Me desconcierta convertirme de pronto en el centro de atención en un grupo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 105, dim: 'H',  dir: 1,  text: 'Siempre tengo que esforzarme por vencer mi timidez.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 137, dim: 'H',  dir: -1, text: 'Cuando entro a un grupo nuevo, normalmente me adapto rápido.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 8,   dim: 'I',  dir: 1,  text: 'Me parecería más interesante ser:', opts: ['A. ingeniero/a en construcción', 'B. ?', 'C. autor/a de obras teatrales'] },
+    { id: 42,  dim: 'I',  dir: -1, text: 'Si pudiera, preferiría practicar:', opts: ['A. esgrima o danza', 'B. ?', 'C. tenis o lucha libre'] },
+    { id: 110, dim: 'I',  dir: 1,  text: 'Me interesan las cosas mecánicas y se me da bastante bien arreglarlas.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 138, dim: 'I',  dir: 1,  text: 'Prefiero leer relatos duros o de acción realista antes que novelas sentimentales e imaginativas.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 13,  dim: 'L',  dir: -1, text: 'Muchas personas te perjudicarían si eso les ayudara a progresar.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 45,  dim: 'L',  dir: 1,  text: 'La gente suele formarse una opinión de mí demasiado rápido.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
+    { id: 78,  dim: 'L',  dir: 1,  text: 'Cuando el trabajo se vuelve fácil, la gente tiende a hacerse floja.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
+    { id: 112, dim: 'L',  dir: -1, text: 'Da la impresión de que no puedo confiar en más de la mitad de la gente que voy conociendo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 17,  dim: 'M',  dir: 1,  text: '¿Mis pensamientos son demasiado complejos para que muchas personas los comprendan?', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
+    { id: 46,  dim: 'M',  dir: 1,  text: 'Soy de las personas que:', opts: ['A. hacen siempre las cosas prácticas', 'B. ?', 'C. imaginan o reflexionan sobre sí mismas'] },
+    { id: 81,  dim: 'M',  dir: 1,  text: 'Presto más atención a:', opts: ['A. las cosas prácticas que me rodean', 'B. ?', 'C. mis pensamientos y mi imaginación'] },
+    { id: 114, dim: 'M',  dir: 1,  text: 'A menudo los demás dicen que mis ideas son realistas y prácticas.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 15,  dim: 'N',  dir: 1,  text: 'Hablo de mis sentimientos:', opts: ['A. con facilidad si noto interés', 'B. ?', 'C. solo cuando no me queda otra opción'] },
+    { id: 50,  dim: 'N',  dir: -1, text: 'Suelo ser reservado/a y guardar mis problemas para mí.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 84,  dim: 'N',  dir: 1,  text: 'Al tratar con la gente, es mejor:', opts: ['A. hablar con total franqueza', 'B. ?', 'C. no mostrar todas tus cartas'] },
+    { id: 117, dim: 'N',  dir: 1,  text: 'Me resulta fácil hablar de mi vida, incluso de aspectos muy personales.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 19,  dim: 'O',  dir: 1,  text: 'Pienso en cosas que debí haber dicho y no dije.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
+    { id: 54,  dim: 'O',  dir: -1, text: 'Me altero más que otras personas cuando veo a otros enojados entre sí.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 82,  dim: 'O',  dir: 1,  text: 'Cuando me critican delante de otros, casi nunca me siento muy herido/a.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
+    { id: 119, dim: 'O',  dir: 1,  text: 'Tiendo a ser muy sensible y a preocuparme mucho por algo que hice.', opts: ['A. Casi nunca', 'B. ?', 'C. A menudo'] },
+    { id: 24,  dim: 'Q1', dir: 1,  text: 'Si tuviera que construir algo, seguiría las instrucciones al pie de la letra:', opts: ['A. verdadero', 'B. ?', 'C. falso, podría salir algo más interesante'] },
+    { id: 55,  dim: 'Q1', dir: 1,  text: 'Este mundo necesita más personas íntegras y constantes.', opts: ['A. Verdadero', 'B. ?', 'C. más reformadores con ideas nuevas'] },
+    { id: 86,  dim: 'Q1', dir: 1,  text: 'Me agrada más la gente que:', opts: ['A. es estable y tradicional', 'B. ?', 'C. revisa seriamente su manera de ver la vida'] },
+    { id: 149, dim: 'Q1', dir: 1,  text: 'Prefiero probar maneras nuevas de hacer las cosas antes que seguir caminos conocidos.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 25,  dim: 'Q2', dir: 1,  text: 'Al construir o hacer algo, preferiría trabajar:', opts: ['A. con otras personas', 'B. ?', 'C. solo/a'] },
+    { id: 56,  dim: 'Q2', dir: 1,  text: 'Prefiero los juegos en los que:', opts: ['A. se juega en equipo', 'B. ?', 'C. cada uno juega por su cuenta'] },
+    { id: 89,  dim: 'Q2', dir: -1, text: 'Suelo terminar mejor las cosas cuando trabajo solo/a que cuando trabajo con otros.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 123, dim: 'Q2', dir: 1,  text: 'Prefiero almorzar:', opts: ['A. con otras personas', 'B. Neutral', 'C. solo/a'] },
+    { id: 26,  dim: 'Q3', dir: 1,  text: 'Me gusta planificar con anticipación para no perder tiempo entre tareas.', opts: ['A. Raras veces', 'B. ?', 'C. A menudo'] },
+    { id: 57,  dim: 'Q3', dir: 1,  text: 'A menudo dejo algunas cosas al azar en lugar de hacer planes muy detallados.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 93,  dim: 'Q3', dir: -1, text: 'Soy algo perfeccionista y me gusta que las cosas se hagan bien.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 154, dim: 'Q3', dir: 1,  text: 'Yo pienso que:', opts: ['A. algunos trabajos no requieren tanto cuidado', 'B. ?', 'C. cualquier trabajo debe hacerse bien'] },
+    { id: 28,  dim: 'Q4', dir: -1, text: 'Cuando estoy tenso/a, hasta las cosas pequeñas me irritan.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 60,  dim: 'Q4', dir: 1,  text: 'Si alguien me interrumpe cuando estoy haciendo algo, no me afecta demasiado.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 94,  dim: 'Q4', dir: 1,  text: 'Cuando debo hacer una larga fila, no me pongo tan nervioso/a como la mayoría.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] },
+    { id: 124, dim: 'Q4', dir: 1,  text: 'Soy paciente con la gente, incluso cuando no es cortés ni considerada conmigo.', opts: ['A. Verdadero', 'B. ?', 'C. Falso'] }
   ];
 
   const result = {};
 
   Object.keys(PROFILES).forEach(profile => {
-    // TODAS las 60 preguntas se habilitan para todos los perfiles equitativamente.
-    // El peso individual es 100% dividido en 60.
-    const individualWeight = 100 / baseQuestions.length; 
-    
-    result[profile] = baseQuestions.map(bq => {
+
+    // --- 1. Calcular peso bruto de cada pregunta según su factor y el perfil ---
+    const rawWeights = baseQuestions.map(bq => {
+      const factorMatrix = PF16_WEIGHT_MATRIX[bq.dim];
+      const multiplier = factorMatrix ? (factorMatrix[profile] || 1.0) : 1.0;
+      return multiplier;
+    });
+
+    // --- 2. Normalizar para que la suma total == 100 ---
+    const rawSum = rawWeights.reduce((a, b) => a + b, 0);
+    const factor_norm = rawSum > 0 ? 100 / rawSum : 1;
+
+    result[profile] = baseQuestions.map((bq, idx) => {
+      const factorMatrix = PF16_WEIGHT_MATRIX[bq.dim];
+      const multiplier = factorMatrix ? (factorMatrix[profile] || 1.0) : 1.0;
+      const normalizedWeight = parseFloat((rawWeights[idx] * factor_norm).toFixed(3));
+
+      // Valores de respuesta: según dir (dirección del ítem en el factor)
+      // dir=1 → C=polo_alto_positivo: opt A=bajo(1) → opt C=alto(5)
+      // dir=-1 → polo inverso: opt A=alto(5) → opt C=bajo(1)
       const valA = bq.dir === 1 ? 1 : 5;
       const valB = 3;
       const valC = bq.dir === 1 ? 5 : 1;
 
-      const bioTarget = ['C', 'O', 'Q4'].includes(bq.dim) ? 'stress' : 
-                        ['M', 'Q1', 'Q3'].includes(bq.dim) ? 'cognitive' : 'baseline';
+      const bioTarget = ['C','O','Q4'].includes(bq.dim) ? 'stress' :
+                        ['M','Q1','Q3'].includes(bq.dim) ? 'cognitive' : 'baseline';
+
+      const factorDesc = PF16_FACTOR_DESCRIPTIONS[bq.dim] || {};
 
       return {
         id: `q${bq.id}_${profile}_${bq.dim}`,
+        originalId: bq.id,
         text: bq.text,
         type: 'multiple',
-        weight: parseFloat(individualWeight.toFixed(2)),
+        dim: bq.dim,
+        dir: bq.dir,
+        weight: normalizedWeight,
+        weight_multiplier: multiplier,
         biometric_trigger: bioTarget,
+        factor_nombre: factorDesc.nombre || bq.dim,
         options: [
           { text: bq.opts[0], val: valA },
           { text: bq.opts[1], val: valB },
@@ -1936,11 +2202,11 @@ function generateSampleQuestions() {
       };
     });
 
-    // Ajuste milimétrico de redondeo para que siempre sume 100% exactos
+    // Ajuste milimétrico de redondeo para que siempre sume exactamente 100
     let currentTotal = result[profile].reduce((acc, q) => acc + q.weight, 0);
-    if (currentTotal !== 100) {
-       const diff = 100 - currentTotal;
-       result[profile][0].weight = parseFloat((result[profile][0].weight + diff).toFixed(2));
+    const diff = parseFloat((100 - currentTotal).toFixed(3));
+    if(Math.abs(diff) > 0.001) {
+      result[profile][0].weight = parseFloat((result[profile][0].weight + diff).toFixed(3));
     }
   });
 
@@ -1955,8 +2221,8 @@ function initApp() {
     year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'
   });
 
-  // Forzamos actualización de preguntas a la nueva lógica igualitaria sin borrar historial previo
-  if (!lsGet('initialized_v3_exigencia', false)) {
+  // Forzamos regeneración con la nueva lógica de ponderación diferenciada 16PF-5
+  if (!lsGet('initialized_v4_pf16_diff', false)) {
     lsSet('questions', generateSampleQuestions());
     
     if (!lsGet('initialized', false)) {
@@ -1967,6 +2233,7 @@ function initApp() {
     
     lsSet('initialized', true);
     lsSet('initialized_v3_exigencia', true);
+    lsSet('initialized_v4_pf16_diff', true);
   }
 
   loadConfig();
@@ -2155,7 +2422,9 @@ function renderQuestion() {
   document.getElementById('q-progress').style.width = `${((idx+1)/total)*100}%`;
   document.getElementById('q-number').textContent = `PREGUNTA ${String(idx+1).padStart(2,'0')}`;
   document.getElementById('q-text').textContent = q.text;
-  document.getElementById('q-weight').textContent = `Peso en perfil: ${q.weight}%`;
+  document.getElementById('q-weight').textContent = q.factor_nombre
+    ? `Factor 16PF-5: ${q.factor_nombre} — Peso en perfil: ${q.weight}%`
+    : `Peso en perfil: ${q.weight}%`;
   document.getElementById('btn-prev-q').style.display = idx > 0 ? 'inline-flex' : 'none';
   document.getElementById('btn-next-q').textContent = idx === total-1 ? 'Finalizar Evaluación ✓' : 'Siguiente →';
 
@@ -2332,19 +2601,20 @@ function renderEmotionDisplay(emotions) {
 }
 
 // ================================================================
-// FINISH EVALUATION
+// FINISH EVALUATION — Motor de Puntuación Psicométrica Diferenciada
 // ================================================================
 function finishEval() {
   stopBioDetection();
 
-  const questions = evalState.questions;
+  const questions   = evalState.questions;
+  const cargo       = evalState.postulant.cargo;
+
+  // ── PASO 1: Puntuación ponderada global (Σ respuesta×peso / Σ pesos) × 100 ──
   let totalWeight = 0, earnedScore = 0;
-
   questions.forEach((q, i) => {
-    const ans = evalState.answers[i];
-    const weight = q.weight || 5;
+    const ans    = evalState.answers[i];
+    const weight = q.weight || (100 / questions.length);
     totalWeight += weight;
-
     if(q.type === 'likert') {
       if(ans !== null) earnedScore += (ans / 5) * weight;
     } else {
@@ -2353,9 +2623,88 @@ function finishEval() {
       }
     }
   });
-
   const scoreTest = totalWeight > 0 ? (earnedScore / totalWeight) * 100 : 0;
 
+  // ── PASO 2: Perfil por Factor 16PF-5 (score promedio 1-5 por dimensión) ──
+  const factorScores   = {};   // { dim: { sumW, sumWV, count } }
+  questions.forEach((q, i) => {
+    const ans = evalState.answers[i];
+    if(ans === null || !q.dim) return;
+    const val = q.type === 'likert'
+      ? (ans || 3)
+      : (q.options && q.options[ans] ? q.options[ans].val : 3);
+
+    if(!factorScores[q.dim]) factorScores[q.dim] = { sumW:0, sumWV:0, count:0 };
+    const w = q.weight_multiplier || 1.0;
+    factorScores[q.dim].sumW  += w;
+    factorScores[q.dim].sumWV += val * w;
+    factorScores[q.dim].count++;
+  });
+
+  // Promedio ponderado por factor (escala 1-5)
+  const factorAvg = {};
+  Object.keys(factorScores).forEach(dim => {
+    const fs = factorScores[dim];
+    factorAvg[dim] = fs.sumW > 0 ? fs.sumWV / fs.sumW : 3;
+  });
+
+  // ── PASO 3: Vetos psicométricos por factores críticos negativos ──
+  const vetoes = [];
+
+  // Veto O (Aprensión/Ansiedad): score alto en O = indeseable en seguridad
+  const scoreO = factorAvg['O'] || 3;
+  const threshO = CRITICAL_REJECTION_THRESHOLDS.O[cargo] || 3.5;
+  if(scoreO >= threshO) {
+    vetoes.push({
+      factor: 'O',
+      label: CRITICAL_REJECTION_THRESHOLDS.O.label,
+      competencia: CRITICAL_REJECTION_THRESHOLDS.O.competencia,
+      valor: parseFloat(scoreO.toFixed(2)),
+      umbral: threshO
+    });
+  }
+
+  // Veto Q4 (Tensión/Irritabilidad): score alto en Q4 = indeseable
+  const scoreQ4 = factorAvg['Q4'] || 3;
+  const threshQ4 = CRITICAL_REJECTION_THRESHOLDS.Q4[cargo] || 3.5;
+  if(scoreQ4 >= threshQ4) {
+    vetoes.push({
+      factor: 'Q4',
+      label: CRITICAL_REJECTION_THRESHOLDS.Q4.label,
+      competencia: CRITICAL_REJECTION_THRESHOLDS.Q4.competencia,
+      valor: parseFloat(scoreQ4.toFixed(2)),
+      umbral: threshQ4
+    });
+  }
+
+  // Veto L (Suspicacia excesiva): score alto en L = indeseable para trabajo en equipo
+  const scoreL = factorAvg['L'] || 3;
+  const threshL = CRITICAL_REJECTION_THRESHOLDS.L[cargo] || 4.0;
+  if(scoreL >= threshL) {
+    vetoes.push({
+      factor: 'L',
+      label: CRITICAL_REJECTION_THRESHOLDS.L.label,
+      competencia: CRITICAL_REJECTION_THRESHOLDS.L.competencia,
+      valor: parseFloat(scoreL.toFixed(2)),
+      umbral: threshL
+    });
+  }
+
+  // Veto G_inv (Baja Normatividad): score BAJO en G = indeseable en seguridad
+  const scoreG = factorAvg['G'] || 3;
+  const scoreGinv = 6 - scoreG; // Invertir escala para usar el mismo umbral de "alto indeseable"
+  const threshGinv = CRITICAL_REJECTION_THRESHOLDS.G_inv[cargo] || 2.5;
+  if(scoreG <= threshGinv) {
+    vetoes.push({
+      factor: 'G_inv',
+      label: CRITICAL_REJECTION_THRESHOLDS.G_inv.label,
+      competencia: CRITICAL_REJECTION_THRESHOLDS.G_inv.competencia,
+      valor: parseFloat(scoreG.toFixed(2)),
+      umbral: threshGinv
+    });
+  }
+
+  // ── PASO 4: Componente biométrico ──
   let scoreBio = null;
   let bioMetrics = null;
   if(evalState.bioEnabled && evalState.bioLog.length > 0) {
@@ -2365,20 +2714,20 @@ function finishEval() {
     EMOTIONS.forEach(e => emoCounts[e] = 0);
     log.forEach(entry => { emoCounts[entry.emotion] = (emoCounts[entry.emotion]||0) + 1; });
 
-    const alertCount = ALERT_EMOTIONS.reduce((acc,e) => acc + (emoCounts[e]||0), 0);
+    const alertCount   = ALERT_EMOTIONS.reduce((acc,e) => acc + (emoCounts[e]||0), 0);
     const neutralPositive = (emoCounts.neutral||0) + (emoCounts.happy||0);
-    const alertPct = total > 0 ? (alertCount/total)*100 : 0;
+    const alertPct  = total > 0 ? (alertCount/total)*100 : 0;
     const neutralPct = total > 0 ? (neutralPositive/total)*100 : 0;
 
     const uniqueEmotions = Object.values(emoCounts).filter(v=>v>0).length;
-    const variability = Math.round((uniqueEmotions / EMOTIONS.length) * 100);
+    const variability    = Math.round((uniqueEmotions / EMOTIONS.length) * 100);
 
     let stressPenalty = 0;
     log.forEach(entry => {
-       const qObj = questions[entry.q - 1];
-       if (qObj && qObj.biometric_trigger === 'stress' && ALERT_EMOTIONS.includes(entry.emotion)) {
-           stressPenalty += 2; 
-       }
+      const qObj = questions[entry.q - 1];
+      if(qObj && qObj.biometric_trigger === 'stress' && ALERT_EMOTIONS.includes(entry.emotion)) {
+        stressPenalty += 2;
+      }
     });
 
     let baseBioScore = Math.max(0, Math.min(100, neutralPct * 0.8 + (100 - alertPct) * 0.2));
@@ -2388,8 +2737,9 @@ function finishEval() {
     bioMetrics = { predominant, variability, alertPct: Math.round(alertPct) };
   }
 
-  const cfg = lsGet('config', {bioWeight:20});
-  const bioWeight = cfg.bioWeight || 20;
+  // ── PASO 5: Puntaje Final (test + bio) con exigencia por perfil ──
+  const cfg      = lsGet('config', {bioWeight:20});
+  const bioWeight  = cfg.bioWeight || 20;
   const testWeight = 100 - bioWeight;
 
   let scoreFinal;
@@ -2399,17 +2749,16 @@ function finishEval() {
     scoreFinal = scoreTest;
   }
 
-  // --- LÓGICA DE EXIGENCIA ASCENDENTE POR PERFIL ---
-  const cargo = evalState.postulant.cargo;
   const exigencyIncrement = EXIGENCY_MODIFIERS[cargo] || 0;
-
-  const cfg2 = lsGet('config', {umbraRec:70, umbralRisk:50});
-  // Se suma el incremento del 5% proporcional al cargo
-  const umbralRec = (cfg2.umbraRec || 70) + exigencyIncrement;
+  const cfg2     = lsGet('config', {umbraRec:70, umbralRisk:50});
+  const umbralRec  = (cfg2.umbraRec  || 70) + exigencyIncrement;
   const umbralRisk = (cfg2.umbralRisk || 50) + exigencyIncrement;
 
+  // ── PASO 6: Resultado final (los vetos pueden forzar NO RECOMENDADO) ──
   let resultado;
-  if(scoreFinal >= umbralRec) {
+  if(vetoes.length > 0) {
+    resultado = 'no_recomendado';  // Veto psicométrico tiene precedencia
+  } else if(scoreFinal >= umbralRec) {
     resultado = 'recomendado';
   } else if(scoreFinal >= umbralRisk) {
     resultado = 'riesgoso';
@@ -2417,20 +2766,26 @@ function finishEval() {
     resultado = 'no_recomendado';
   }
 
-  const narrative = generateNarrative(evalState.postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics, umbralRec, umbralRisk);
+  // ── PASO 7: Narrative + persistencia ──
+  const narrative = generateNarrative(
+    evalState.postulant, scoreTest, scoreBio, scoreFinal,
+    resultado, bioMetrics, umbralRec, umbralRisk, factorAvg, vetoes
+  );
 
-  const correlativo = lsGet('correlativo', 1);
-  const evalRecord = {
+  const correlativo  = lsGet('correlativo', 1);
+  const evalRecord   = {
     id: 'eval_' + Date.now(),
     correlativo,
     fecha: new Date().toISOString().split('T')[0],
     postulant: evalState.postulant,
-    scoreTest: Math.round(scoreTest*10)/10,
-    scoreBio: scoreBio !== null ? Math.round(scoreBio*10)/10 : null,
-    scoreFinal: Math.round(scoreFinal*10)/10,
-    umbralRec,          // Guardamos el umbral para este reporte específico
-    umbralRisk,         // Guardamos el riesgo para este reporte específico
-    exigencyIncrement,  // Nivel de incremento
+    scoreTest:   Math.round(scoreTest*10)/10,
+    scoreBio:    scoreBio !== null ? Math.round(scoreBio*10)/10 : null,
+    scoreFinal:  Math.round(scoreFinal*10)/10,
+    umbralRec,
+    umbralRisk,
+    exigencyIncrement,
+    factorAvg,           // Perfil por factor 16PF-5
+    vetoes,              // Vetos psicométricos activos
     bioEnabled: evalState.bioEnabled,
     bioLog: evalState.bioLog,
     bioMetrics,
@@ -2447,42 +2802,73 @@ function finishEval() {
 
   window._lastEval = evalRecord;
 
-  document.getElementById('eval-step-test').style.display = 'none';
+  document.getElementById('eval-step-test').style.display    = 'none';
   document.getElementById('eval-step-results').style.display = 'block';
-
   window.scrollTo(0,0);
 }
 
-function generateNarrative(postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics, umbralRec, umbralRisk) {
+function generateNarrative(postulant, scoreTest, scoreBio, scoreFinal, resultado, bioMetrics, umbralRec, umbralRisk, factorAvg, vetoes) {
+  factorAvg = factorAvg || {};
+  vetoes    = vetoes    || [];
   const cargoName = PROFILES[postulant.cargo] || postulant.cargo;
-  let text = `<strong>${postulant.nombre}</strong> fue evaluado/a para el cargo de <strong>${cargoName}</strong> mediante la plataforma SPC-100 (Batería de 60 preguntas uniformes). `;
+  const cargo     = postulant.cargo;
 
-  text += `Para este perfil, el sistema aplicó un nivel de exigencia escalado, estableciendo el umbral mínimo de aprobación óptima en <strong>${umbralRec}%</strong>. `;
+  let text = `<strong>${postulant.nombre}</strong> fue evaluado/a para el cargo de <strong>${cargoName}</strong> mediante la plataforma SPC-100 con Batería Psicométrica Diferenciada 16PF-5. `;
+  text += `El sistema aplicó ponderación diferencial de factores según el perfil del cargo, con un umbral de aprobación ajustado de <strong>${umbralRec}%</strong>. `;
 
-  if(resultado === 'recomendado') {
-    text += `El perfil psicométrico del postulante es sólido y supera las exigencias requeridas para este cargo. `;
+  // Veredicto con causa de veto si aplica
+  if(vetoes.length > 0) {
+    text += `<strong>⚠ VETO PSICOMÉTRICO ACTIVO:</strong> El perfil del postulante presenta indicadores críticos negativos que determinan la recomendación de NO IDÓNEO con independencia del puntaje global: `;
+    vetoes.forEach(v => {
+      text += `<em>${v.label}</em> (valor ${v.valor.toFixed(2)}/5.0 supera umbral de ${v.umbral}/5.0 para este cargo — competencia afectada: ${v.competencia}). `;
+    });
+  } else if(resultado === 'recomendado') {
+    text += `El perfil psicométrico es sólido y supera las exigencias del cargo. No se activaron vetos en factores críticos negativos. `;
   } else if(resultado === 'riesgoso') {
-    text += `El perfil psicométrico del postulante presenta áreas de mejora y se sitúa en una zona de riesgo (por debajo del ${umbralRec}% óptimo, pero sobre el piso de ${umbralRisk}%). Se sugiere evaluación adicional antes de tomar una decisión de contratación definitiva. `;
+    text += `El perfil se sitúa en zona de riesgo (${Math.round(scoreFinal)}% vs. umbral óptimo ${umbralRec}%). Se recomienda evaluación adicional. `;
   } else {
-    text += `El perfil psicométrico del postulante no alcanza los estándares de exigencia (puntaje bajo el ${umbralRisk}%) requeridos específicamente para el nivel del cargo de ${cargoName}. `;
+    text += `El perfil no alcanza los estándares mínimos (${Math.round(scoreFinal)}% vs. piso ${umbralRisk}%). No se recomienda la contratación. `;
   }
 
-  text += `El puntaje del test psicométrico general fue de <strong>${Math.round(scoreTest)}%</strong>. `;
+  // Análisis de factores más relevantes para el cargo
+  const compKey = cargo;
+  const critFactors = (PF16_WEIGHT_MATRIX['C'] && PF16_WEIGHT_MATRIX['C'][compKey] >= 1.8)
+    ? ['C','G','Q3','Q4','O']
+    : ['A','E','H','N','Q1'];
 
+  const factorHighlights = [];
+  Object.entries(factorAvg).forEach(([dim, avg]) => {
+    const desc = PF16_FACTOR_DESCRIPTIONS[dim];
+    if(!desc) return;
+    const mult = (PF16_WEIGHT_MATRIX[dim] || {})[cargo] || 1.0;
+    if(mult < 1.5) return;  // Solo mostrar factores relevantes (peso ≥ 1.5)
+    const nivel = avg >= 4.0 ? 'alto' : avg >= 3.0 ? 'medio' : 'bajo';
+    const polo  = avg >= 3.5 ? desc.poloAlto : desc.poloBajo;
+    factorHighlights.push(`<em>${desc.nombre}</em>: ${nivel} (${avg.toFixed(2)}/5.0) — ${polo}`);
+  });
+
+  if(factorHighlights.length > 0) {
+    text += `Factores de mayor relevancia para el cargo evaluados: ${factorHighlights.slice(0,4).join('; ')}. `;
+  }
+
+  // Puntaje test
+  text += `Puntaje test psicométrico ponderado: <strong>${Math.round(scoreTest)}%</strong>. `;
+
+  // Biométrico
   if(scoreBio !== null && bioMetrics) {
-    text += `El componente biométrico aportó un puntaje de <strong>${Math.round(scoreBio)}%</strong>. `;
+    text += `Componente biométrico: <strong>${Math.round(scoreBio)}%</strong>. `;
     if(bioMetrics.alertPct > 30) {
-      text += `El análisis detectó una presencia significativa de emociones de alerta (${bioMetrics.alertPct}% del tiempo), incluyendo expresiones de tensión durante preguntas focalizadas en factores de riesgo, indicando alta susceptibilidad al estrés operativo. `;
+      text += `Nivel elevado de emociones de alerta (${bioMetrics.alertPct}%), indicando vulnerabilidad al estrés operativo. `;
     } else if(bioMetrics.alertPct > 10) {
-      text += `El análisis detectó presencia moderada de emociones de alerta (${bioMetrics.alertPct}%), sugiriendo estrés situacional acotado. `;
+      text += `Nivel moderado de emociones de alerta (${bioMetrics.alertPct}%), estrés situacional acotado. `;
     } else {
-      text += `El análisis biométrico validó una predominancia de expresiones neutras/estables, lo que refuerza la estabilidad emocional reportada en el test. `;
+      text += `Predominancia de respuestas emocionales estables, validando el perfil psicométrico. `;
     }
   } else {
-    text += `La evaluación se realizó sin componente biométrico activo; el informe se sustenta en base psicométrica exclusivamente. `;
+    text += `Evaluación sin componente biométrico; sustentada en base psicométrica. `;
   }
 
-  text += `El índice de adecuación final logrado es de <strong>${Math.round(scoreFinal)}%</strong>.`;
+  text += `Índice de adecuación final: <strong>${Math.round(scoreFinal)}%</strong>.`;
   return text;
 }
 
@@ -2714,6 +3100,127 @@ function generatePDF(ev) {
   doc.text(lines, 12, y);
   y += lines.length * 5 + 5;
 
+  // ── PERFIL PSICOMÉTRICO 16PF-5 POR FACTOR ──
+  if(ev.factorAvg && Object.keys(ev.factorAvg).length > 0) {
+    if(y > H - 70) { doc.addPage(); y = 15; }
+
+    doc.setFillColor(20,28,46);
+    doc.rect(10,y,W-20,8,'F');
+    doc.setTextColor(...colors.light);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.text('PERFIL PSICOMÉTRICO 16PF-5 — DESGLOSE POR FACTOR', 14, y+5);
+    y += 12;
+
+    const dimOrder = ['A','C','E','F','G','H','I','L','M','N','O','Q1','Q2','Q3','Q4'];
+    const colLeft  = 12, colMid = 90, colRight = 150;
+    doc.setFontSize(7.5);
+
+    dimOrder.forEach((dim, idx) => {
+      const avg = ev.factorAvg[dim];
+      if(avg === undefined) return;
+      if(y > H - 30) { doc.addPage(); y = 15; }
+
+      const desc   = PF16_FACTOR_DESCRIPTIONS[dim] || { nombre: dim };
+      const mult   = ev.postulant && ev.postulant.cargo ? ((PF16_WEIGHT_MATRIX[dim]||{})[ev.postulant.cargo]||1.0) : 1.0;
+      const isVeto = ev.vetoes && ev.vetoes.find(v => v.factor === dim || (v.factor === 'G_inv' && dim === 'G'));
+      const nivel  = avg >= 4.0 ? 'ALTO' : avg >= 3.0 ? 'MEDIO' : 'BAJO';
+
+      // Highlight background for critical factors
+      if(mult >= 2.0) {
+        doc.setFillColor(235,242,255);
+        doc.rect(10, y-3, W-20, 7, 'F');
+      }
+      if(isVeto) {
+        doc.setFillColor(255,235,235);
+        doc.rect(10, y-3, W-20, 7, 'F');
+      }
+
+      doc.setFont('helvetica','bold');
+      doc.setTextColor(isVeto ? 180 : 60, isVeto ? 30 : 60, isVeto ? 30 : 80);
+      doc.text(desc.nombre + (mult >= 1.8 ? ' ★' : ''), colLeft, y);
+      doc.setFont('helvetica','normal');
+      doc.setTextColor(40,40,60);
+      doc.text(`${avg.toFixed(2)} / 5.0 — ${nivel}${isVeto ? ' ⚠ VETO' : ''}`, colMid, y);
+      doc.setTextColor(...colors.steel);
+      const polo = avg >= 3.5 ? (PF16_FACTOR_DESCRIPTIONS[dim]||{}).poloAlto||'' : (PF16_FACTOR_DESCRIPTIONS[dim]||{}).poloBajo||'';
+      const poloShort = polo.length > 45 ? polo.substring(0,42)+'…' : polo;
+      doc.text(poloShort, colRight, y);
+      y += 6.5;
+    });
+
+    y += 4;
+    doc.setFontSize(7);
+    doc.setTextColor(...colors.steel);
+    doc.text('★ = Factor crítico para el cargo (multiplicador ≥ 1.8) | ⚠ VETO = Umbral crítico negativo superado', 12, y);
+    y += 8;
+  }
+
+  // ── VETOS PSICOMÉTRICOS ──
+  if(ev.vetoes && ev.vetoes.length > 0) {
+    if(y > H - 50) { doc.addPage(); y = 15; }
+
+    doc.setFillColor(...colors.red);
+    doc.rect(10,y,W-20,8,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.text('⚠ VETOS PSICOMÉTRICOS ACTIVOS — INDICADORES CRÍTICOS NEGATIVOS', 14, y+5);
+    y += 12;
+
+    ev.vetoes.forEach(v => {
+      if(y > H - 30) { doc.addPage(); y = 15; }
+      doc.setFillColor(255,240,240);
+      doc.rect(10,y-2,W-20,16,'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8.5);
+      doc.setTextColor(...colors.red);
+      doc.text(v.label, 12, y+3);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8);
+      doc.setTextColor(80,20,20);
+      doc.text(`Valor detectado: ${v.valor.toFixed(2)}/5.0   Umbral máximo: ${v.umbral}/5.0`, 12, y+9);
+      doc.setTextColor(...colors.steel);
+      doc.text(`Competencia afectada: ${v.competencia}`, 12, y+14);
+      y += 20;
+    });
+    y += 4;
+  }
+  if(ev.entrevista && Object.values(ev.entrevista).some(v => v && v.trim())) {
+    if(y > H - 70) { doc.addPage(); y = 15; }
+
+    doc.setFillColor(20,28,46);
+    doc.rect(10,y,W-20,8,'F');
+    doc.setTextColor(...colors.light);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.text('ENTREVISTA PERSONAL — COMENTARIOS DEL EVALUADOR', 14, y+5);
+    y += 12;
+
+    const entFields = [
+      ['Disposición', ev.entrevista.disposicion],
+      ['Facilidad para Aprender', ev.entrevista.aprender],
+      ['Compromiso', ev.entrevista.compromiso],
+      ['Capacidad para Tomar Decisiones', ev.entrevista.decisiones],
+      ['Resolución de Conflictos', ev.entrevista.conflictos],
+      ['Otros', ev.entrevista.otros]
+    ].filter(([,v]) => v && v.trim());
+
+    entFields.forEach(([label, value]) => {
+      if(y > H - 35) { doc.addPage(); y = 15; }
+      doc.setFont('helvetica','bold');
+      doc.setTextColor(80,80,100);
+      doc.setFontSize(8);
+      doc.text(label + ':', 12, y);
+      y += 5;
+      doc.setFont('helvetica','normal');
+      doc.setTextColor(40,40,60);
+      doc.setFontSize(8);
+      const vLines = doc.splitTextToSize(value, W-28);
+      doc.text(vLines, 16, y);
+      y += vLines.length * 5 + 4;
+    });
+    y += 4;
+  }
+
   const footerY = H - 20;
   doc.setDrawColor(...colors.steel);
   doc.line(10, footerY, W-10, footerY);
@@ -2726,6 +3233,52 @@ function generatePDF(ev) {
 
   doc.save(`SPC100_Informe_${ev.postulant.nombre.replace(/\s+/g,'_')}_${ev.fecha}.pdf`);
   showToast('✅ Informe PDF generado exitosamente');
+}
+
+// ================================================================
+// ENTREVISTA PERSONAL
+// ================================================================
+function openEntrevista(id) {
+  const evals = lsGet('evaluations', []);
+  const ev = evals.find(e => e.id === id);
+  if(!ev) return;
+
+  document.getElementById('entrevista-eval-id').value = id;
+  document.getElementById('entrevista-modal-subtitle').textContent =
+    `Postulante: ${ev.postulant.nombre} — ${PROFILES[ev.postulant.cargo]||ev.postulant.cargo}`;
+
+  const ent = ev.entrevista || {};
+  document.getElementById('ent-disposicion').value  = ent.disposicion  || '';
+  document.getElementById('ent-aprender').value     = ent.aprender     || '';
+  document.getElementById('ent-compromiso').value   = ent.compromiso   || '';
+  document.getElementById('ent-decisiones').value   = ent.decisiones   || '';
+  document.getElementById('ent-conflictos').value   = ent.conflictos   || '';
+  document.getElementById('ent-otros').value        = ent.otros        || '';
+
+  document.getElementById('entrevista-modal').style.display = 'flex';
+}
+
+function saveEntrevista() {
+  const id = document.getElementById('entrevista-eval-id').value;
+  if(!id) return;
+
+  let evals = lsGet('evaluations', []);
+  const idx = evals.findIndex(e => e.id === id);
+  if(idx === -1) { showToast('⚠️ Registro no encontrado'); return; }
+
+  evals[idx].entrevista = {
+    disposicion : document.getElementById('ent-disposicion').value.trim(),
+    aprender    : document.getElementById('ent-aprender').value.trim(),
+    compromiso  : document.getElementById('ent-compromiso').value.trim(),
+    decisiones  : document.getElementById('ent-decisiones').value.trim(),
+    conflictos  : document.getElementById('ent-conflictos').value.trim(),
+    otros       : document.getElementById('ent-otros').value.trim()
+  };
+
+  lsSet('evaluations', evals);
+  closeModal('entrevista-modal');
+  renderHistorial();
+  showToast('✅ Comentarios de entrevista guardados');
 }
 
 // ================================================================
@@ -2767,6 +3320,7 @@ function renderHistorial() {
         <td><span class="badge ${badgeClass}">${badgeText}</span></td>
         <td>
           <div style="display:flex;gap:6px">
+            <button class="btn btn-entrevista btn-sm" onclick="openEntrevista('${ev.id}')" title="Registrar comentarios de entrevista personal">🗣️</button>
             <button class="btn btn-secondary btn-sm" onclick="viewReport('${ev.id}')">Ver</button>
             <button class="btn btn-primary btn-sm" onclick="downloadFromHistory('${ev.id}')">PDF</button>
             <button class="btn btn-danger btn-sm" onclick="deleteEval('${ev.id}')">✕</button>
@@ -2836,6 +3390,81 @@ function viewReport(id) {
       <p style="color:var(--text-secondary);font-size:0.88rem;line-height:1.8">${ev.narrative}</p>
     </div>
   `;
+
+  // Sección Perfil por Factor 16PF-5
+  if(ev.factorAvg && Object.keys(ev.factorAvg).length > 0) {
+    const dimOrder = ['A','C','E','F','G','H','I','L','M','N','O','Q1','Q2','Q3','Q4'];
+    html += `<div class="report-section"><div class="report-section-title">Perfil Psicométrico 16PF-5 por Factor</div>`;
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">`;
+    dimOrder.forEach(dim => {
+      const avg = ev.factorAvg[dim];
+      if(avg === undefined) return;
+      const desc = PF16_FACTOR_DESCRIPTIONS[dim] || { nombre: dim, poloAlto:'', poloBajo:'' };
+      const mult = ev.postulant && ev.postulant.cargo ? ((PF16_WEIGHT_MATRIX[dim]||{})[ev.postulant.cargo]||1.0) : 1.0;
+      const pct  = ((avg - 1) / 4) * 100;
+      const col  = mult >= 2.0 ? 'var(--accent-blue-glow)' : mult >= 1.5 ? 'var(--accent-cyan)' : 'var(--text-muted)';
+      const veto_check = ev.vetoes && ev.vetoes.find(v => v.factor === dim || (v.factor === 'G_inv' && dim === 'G'));
+      html += `
+        <div style="background:var(--bg-surface);border:1px solid ${veto_check?'var(--accent-red)':'var(--border)'};border-radius:4px;padding:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span style="font-family:var(--font-mono);font-size:0.62rem;color:${col};letter-spacing:0.08em">${desc.nombre}${mult>=1.8?' ★':''}</span>
+            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-primary)">${avg.toFixed(2)}/5${veto_check?' 🚫':''}</span>
+          </div>
+          <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${veto_check?'var(--accent-red)':col};border-radius:2px;transition:width 0.4s"></div>
+          </div>
+          <div style="font-size:0.6rem;color:var(--text-muted);margin-top:3px">${avg>=3.5?desc.poloAlto:desc.poloBajo}</div>
+        </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // Sección Vetos Psicométricos
+  if(ev.vetoes && ev.vetoes.length > 0) {
+    html += `<div class="report-section">
+      <div class="report-section-title" style="color:var(--accent-red)">⚠ Vetos Psicométricos Activos</div>`;
+    ev.vetoes.forEach(v => {
+      html += `<div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:5px;padding:10px;margin-bottom:8px">
+        <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--accent-red);margin-bottom:4px">${v.label}</div>
+        <div class="report-row"><span class="report-row-label">Valor detectado</span><span class="report-row-value" style="color:var(--accent-red)">${v.valor.toFixed(2)} / 5.0</span></div>
+        <div class="report-row"><span class="report-row-label">Umbral máximo permitido</span><span class="report-row-value">${v.umbral} / 5.0</span></div>
+        <div class="report-row"><span class="report-row-label">Competencia afectada</span><span class="report-row-value">${v.competencia}</span></div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Sección Entrevista Personal
+  if(ev.entrevista && Object.values(ev.entrevista).some(v => v && v.trim())) {
+    const entItems = [
+      ['Disposición', ev.entrevista.disposicion],
+      ['Facilidad para Aprender', ev.entrevista.aprender],
+      ['Compromiso', ev.entrevista.compromiso],
+      ['Capacidad para Tomar Decisiones', ev.entrevista.decisiones],
+      ['Resolución de Conflictos', ev.entrevista.conflictos],
+      ['Otros', ev.entrevista.otros]
+    ].filter(([,v]) => v && v.trim());
+    html += `
+      <div class="report-section">
+        <div class="report-section-title">🗣️ Entrevista Personal</div>
+        <div class="report-entrevista-grid">
+          ${entItems.map(([l,v]) => `
+            <div class="report-entrevista-cell">
+              <div class="report-entrevista-cell-label">${l}</div>
+              <div class="report-entrevista-cell-text">${v.replace(/\n/g,'<br>')}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else {
+    html += `
+      <div class="report-section">
+        <div class="report-section-title">🗣️ Entrevista Personal</div>
+        <div class="alert-box alert-warn" style="font-size:0.8rem">⚠️ Sin comentarios de entrevista personal registrados para este postulante.</div>
+      </div>
+    `;
+  }
 
   document.getElementById('report-modal-content').innerHTML = html;
   document.getElementById('report-modal').style.display = 'flex';
