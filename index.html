@@ -1958,12 +1958,12 @@ const ALERT_EMOTIONS = ['angry','fearful','disgusted'];
 
 // Exigencia incremental (+5% por cada perfil)
 const EXIGENCY_MODIFIERS = {
-  guardia_estandar: 0,
+  guardia_estandar: 1,
   guardia_tactico: 5,
-  jefe_grupo: 10,
-  supervisor: 15,
-  jefe_seguridad: 20,
-  administrador_contrato: 25
+  jefe_grupo: 8,
+  supervisor: 10,
+  jefe_seguridad: 15,
+  administrador_contrato: 18,
 };
 
 // ================================================================
@@ -2227,7 +2227,7 @@ function initApp() {
     
     if (!lsGet('initialized', false)) {
       lsSet('evaluations', []);
-      lsSet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:10});
+      lsSet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:0.5});
       lsSet('correlativo', 1);
     }
     
@@ -2241,7 +2241,7 @@ function initApp() {
 }
 
 function loadConfig() {
-  const cfg = lsGet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:10});
+  const cfg = lsGet('config', {umbraRec:70, umbralRisk:50, bioWeight:20, bioInterval:0.5});
   const r1 = document.getElementById('cfg-umbral-rec');
   const r2 = document.getElementById('cfg-umbral-risk');
   const r3 = document.getElementById('cfg-bio-weight');
@@ -2249,7 +2249,7 @@ function loadConfig() {
   if(r1) r1.value = cfg.umbraRec||70;
   if(r2) r2.value = cfg.umbralRisk||50;
   if(r3) r3.value = cfg.bioWeight||20;
-  if(r4) r4.value = cfg.bioInterval||10;
+  if(r4) r4.value = cfg.bioInterval||0.5;
 }
 
 // ================================================================
