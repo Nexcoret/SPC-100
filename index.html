@@ -1462,6 +1462,158 @@ select option { background: var(--bg-surface); }
 </head>
 <body>
 
+<!-- ================================================================
+     PANTALLA DE ACCESO A LA PLATAFORMA
+     ================================================================ -->
+<div id="platform-login-overlay" style="
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg-deep);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  font-family:var(--font-body);
+">
+  <!-- Grid background -->
+  <div style="
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(29,78,216,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(29,78,216,0.05) 1px, transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;
+  "></div>
+
+  <div style="
+    position:relative; z-index:1;
+    background:var(--bg-card);
+    border:1px solid var(--border-bright);
+    border-radius:12px;
+    padding:3rem 2.5rem;
+    width:100%; max-width:420px;
+    box-shadow:0 0 60px rgba(29,78,216,0.2);
+  ">
+    <!-- Logo -->
+    <div style="text-align:center; margin-bottom:2rem;">
+      <div style="
+        display:inline-block;
+        background:var(--accent-blue);
+        color:#fff;
+        font-family:var(--font-display);
+        font-size:1.8rem;
+        font-weight:700;
+        letter-spacing:0.1em;
+        padding:6px 20px;
+        border-radius:6px;
+        margin-bottom:1rem;
+      ">SPC-100</div>
+      <div style="
+        font-family:var(--font-display);
+        font-size:1.1rem;
+        font-weight:600;
+        letter-spacing:0.1em;
+        text-transform:uppercase;
+        color:var(--text-primary);
+        margin-bottom:0.3rem;
+      ">Acceso al Sistema</div>
+      <div style="
+        font-family:var(--font-mono);
+        font-size:0.65rem;
+        letter-spacing:0.15em;
+        text-transform:uppercase;
+        color:var(--text-muted);
+      ">Plataforma de Evaluación Psico-Biométrica</div>
+    </div>
+
+    <!-- Separator -->
+    <div style="border-top:1px solid var(--border); margin-bottom:1.8rem;"></div>
+
+    <!-- Fields -->
+    <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.2rem;">
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted);">
+          Usuario
+        </label>
+        <input type="text" id="plat-login-user" placeholder="Ingrese su usuario"
+          autocomplete="username"
+          onkeydown="if(event.key==='Enter')document.getElementById('plat-login-pass').focus()"
+          style="background:var(--bg-surface); border:1px solid var(--border); border-radius:4px;
+                 color:var(--text-primary); font-family:var(--font-body); font-size:0.9rem;
+                 padding:10px 14px; outline:none; width:100%; transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--accent-blue)'"
+          onblur="this.style.borderColor='var(--border)'"
+        >
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted);">
+          Contraseña
+        </label>
+        <div style="position:relative;">
+          <input type="password" id="plat-login-pass" placeholder="Ingrese su contraseña"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doPlatformLogin()"
+            style="background:var(--bg-surface); border:1px solid var(--border); border-radius:4px;
+                   color:var(--text-primary); font-family:var(--font-body); font-size:0.9rem;
+                   padding:10px 40px 10px 14px; outline:none; width:100%; transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--accent-blue)'"
+            onblur="this.style.borderColor='var(--border)'"
+          >
+          <button onclick="togglePlatPassVis()" title="Mostrar/ocultar contraseña"
+            style="position:absolute; right:10px; top:50%; transform:translateY(-50%);
+                   background:none; border:none; cursor:pointer; color:var(--text-muted);
+                   font-size:1rem; padding:0; line-height:1;"
+            id="plat-pass-eye">👁</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="plat-login-error" style="display:none; margin-bottom:1rem;
+      background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3);
+      border-radius:4px; padding:10px 14px;
+      color:var(--accent-red); font-size:0.82rem; font-family:var(--font-mono);
+      letter-spacing:0.05em;">
+      ⛔ Credenciales incorrectas. Intente nuevamente.
+    </div>
+
+    <!-- Intentos bloqueados -->
+    <div id="plat-login-blocked" style="display:none; margin-bottom:1rem;
+      background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4);
+      border-radius:4px; padding:10px 14px;
+      color:var(--accent-red); font-size:0.82rem; font-family:var(--font-mono);
+      letter-spacing:0.05em; text-align:center;">
+      🔒 Acceso bloqueado.<br>
+      <span id="plat-block-countdown"></span>
+    </div>
+
+    <!-- Button -->
+    <button onclick="doPlatformLogin()" id="plat-login-btn"
+      style="width:100%; padding:12px; background:var(--accent-blue); color:#fff;
+             border:none; border-radius:4px; cursor:pointer;
+             font-family:var(--font-display); font-size:1rem; font-weight:600;
+             letter-spacing:0.12em; text-transform:uppercase; transition:all 0.2s;"
+      onmouseover="this.style.background='var(--accent-blue-light)'"
+      onmouseout="this.style.background='var(--accent-blue)'">
+      INGRESAR →
+    </button>
+
+    <div style="text-align:center; margin-top:1.2rem; font-family:var(--font-mono);
+      font-size:0.6rem; color:var(--text-muted); letter-spacing:0.08em; text-transform:uppercase;">
+      Acceso restringido · Solo personal autorizado
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem; font-family:var(--font-mono); font-size:0.6rem;
+    color:var(--text-muted); letter-spacing:0.1em; text-transform:uppercase;">
+    SPC-100 © 2025 · Sistema de Evaluación Psico-Biométrica
+  </div>
+</div>
+
+<!-- Indicador de sesión en header -->
+<div id="session-indicator" style="display:none; position:fixed; top:0; right:0; z-index:200;
+  padding:4px 12px; font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.1em;
+  text-transform:uppercase; background:rgba(6,10,20,0.9); color:var(--text-muted);">
+  <span id="session-timer-label"></span>
+</div>
+
 <header id="app-header">
   <div class="logo-mark">
     <div class="logo-badge">SPC-100</div>
@@ -1551,11 +1703,11 @@ select option { background: var(--bg-surface); }
             </div>
             <div class="form-group">
               <label>Edad *</label>
-              <input type="number" id="reg-edad" min="18" max="65" placeholder="Ej: 28">
+              <input type="number" id="reg-edad" min="18" max="65" placeholder="Se calcula automáticamente" readonly style="color:var(--text-muted);cursor:not-allowed;">
             </div>
             <div class="form-group">
               <label>Fecha de Nacimiento *</label>
-              <input type="date" id="reg-fnac">
+              <input type="date" id="reg-fnac" onchange="calcularEdad(this.value)">
             </div>
             <div class="form-group">
               <label>Correo Electrónico</label>
@@ -2071,15 +2223,89 @@ let evalState = {
 };
 
 // ================================================================
-// LOCAL STORAGE HELPERS
+// CIFRADO AES-GCM — Web Crypto API
+// ================================================================
+const _SPC_SECRET = 'SPC100-PSICOBIOMETRICO-2025-SEGURIDAD-PRIVADA';
+
+async function _deriveKey(secret) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(secret), { name: 'PBKDF2' }, false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: enc.encode('spc100salt2025'), iterations: 100000, hash: 'SHA-256' },
+    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+  );
+}
+
+async function _encrypt(plaintext) {
+  const key = await _deriveKey(_SPC_SECRET);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(plaintext));
+  const buf = new Uint8Array(iv.byteLength + ciphertext.byteLength);
+  buf.set(iv, 0);
+  buf.set(new Uint8Array(ciphertext), iv.byteLength);
+  return btoa(String.fromCharCode(...buf));
+}
+
+async function _decrypt(ciphertextB64) {
+  try {
+    const buf = Uint8Array.from(atob(ciphertextB64), c => c.charCodeAt(0));
+    const iv = buf.slice(0, 12);
+    const data = buf.slice(12);
+    const key = await _deriveKey(_SPC_SECRET);
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+    return new TextDecoder().decode(plain);
+  } catch(e) { return null; }
+}
+
+// ================================================================
+// LOCAL STORAGE HELPERS — CIFRADOS
 // ================================================================
 function lsGet(key, def) {
-  try { const v = localStorage.getItem('spc100_'+key); return v ? JSON.parse(v) : def; }
-  catch(e) { return def; }
+  try {
+    const v = localStorage.getItem('spc100_' + key);
+    if (!v) return def;
+    // Soporte legado: si no está cifrado (no empieza con marker), devuelve parseado
+    if (v.startsWith('ENC:')) {
+      // Retorno sincrónico con caché en memoria
+      const cached = _lsCache[key];
+      return cached !== undefined ? cached : def;
+    }
+    return JSON.parse(v);
+  } catch(e) { return def; }
 }
 
 function lsSet(key, val) {
-  localStorage.setItem('spc100_'+key, JSON.stringify(val));
+  _lsCache[key] = val;
+  const json = JSON.stringify(val);
+  _encrypt(json).then(enc => {
+    localStorage.setItem('spc100_' + key, 'ENC:' + enc);
+  });
+}
+
+// Caché en memoria para acceso sincrónico
+const _lsCache = {};
+
+// Precarga asíncrona de todas las claves cifradas al inicio
+async function _preloadEncryptedStorage() {
+  const keys = ['evaluations','questions','config','correlativo','initialized',
+                 'initialized_v3_exigencia','initialized_v4_pf16_diff'];
+  for (const key of keys) {
+    try {
+      const raw = localStorage.getItem('spc100_' + key);
+      if (raw && raw.startsWith('ENC:')) {
+        const dec = await _decrypt(raw.slice(4));
+        if (dec !== null) _lsCache[key] = JSON.parse(dec);
+      } else if (raw) {
+        // Migrar datos sin cifrar: re-cifrar automáticamente
+        const parsed = JSON.parse(raw);
+        _lsCache[key] = parsed;
+        lsSet(key, parsed);
+      }
+    } catch(e) {}
+  }
 }
 
 // ================================================================
@@ -2214,9 +2440,155 @@ function generateSampleQuestions() {
 }
 
 // ================================================================
+// SESIÓN DE PLATAFORMA
+// ================================================================
+const _PLAT_USER = 'adminspc';
+const _PLAT_PASS = 'spc100';
+const _SESSION_DURATION_MS = 4 * 60 * 60 * 1000; // 4 horas
+let _sessionTimer = null;
+let _sessionExpiry = null;
+let _loginAttempts = 0;
+let _loginBlockedUntil = null;
+const _MAX_ATTEMPTS = 5;
+const _BLOCK_DURATION_MS = 5 * 60 * 1000; // 5 minutos
+
+function togglePlatPassVis() {
+  const inp = document.getElementById('plat-login-pass');
+  const eye = document.getElementById('plat-pass-eye');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  eye.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function doPlatformLogin() {
+  const errDiv = document.getElementById('plat-login-error');
+  const blockDiv = document.getElementById('plat-login-blocked');
+  errDiv.style.display = 'none';
+
+  // Verificar si está bloqueado
+  if (_loginBlockedUntil && Date.now() < _loginBlockedUntil) {
+    _showBlockCountdown();
+    return;
+  }
+
+  const user = document.getElementById('plat-login-user').value.trim();
+  const pass = document.getElementById('plat-login-pass').value;
+
+  if (user === _PLAT_USER && pass === _PLAT_PASS) {
+    _loginAttempts = 0;
+    _loginBlockedUntil = null;
+    blockDiv.style.display = 'none';
+
+    // Establecer sesión
+    _sessionExpiry = Date.now() + _SESSION_DURATION_MS;
+    try { sessionStorage.setItem('spc_sess', _sessionExpiry.toString()); } catch(e) {}
+
+    document.getElementById('platform-login-overlay').style.display = 'none';
+    document.getElementById('session-indicator').style.display = 'block';
+    _startSessionCountdown();
+    document.getElementById('plat-login-pass').value = '';
+  } else {
+    _loginAttempts++;
+    document.getElementById('plat-login-pass').value = '';
+    if (_loginAttempts >= _MAX_ATTEMPTS) {
+      _loginBlockedUntil = Date.now() + _BLOCK_DURATION_MS;
+      _loginAttempts = 0;
+      errDiv.style.display = 'none';
+      blockDiv.style.display = 'block';
+      _showBlockCountdown();
+    } else {
+      errDiv.style.display = 'block';
+      const remaining = _MAX_ATTEMPTS - _loginAttempts;
+      errDiv.textContent = `⛔ Credenciales incorrectas. Intentos restantes: ${remaining}`;
+    }
+  }
+}
+
+function _showBlockCountdown() {
+  const blockDiv = document.getElementById('plat-login-blocked');
+  const countdown = document.getElementById('plat-block-countdown');
+  blockDiv.style.display = 'block';
+  const btn = document.getElementById('plat-login-btn');
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+  btn.style.cursor = 'not-allowed';
+
+  const interval = setInterval(() => {
+    const remaining = Math.max(0, _loginBlockedUntil - Date.now());
+    if (remaining <= 0) {
+      clearInterval(interval);
+      blockDiv.style.display = 'none';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      countdown.textContent = '';
+      return;
+    }
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    countdown.textContent = `Espere ${mins}:${String(secs).padStart(2,'0')} para intentar nuevamente`;
+  }, 1000);
+}
+
+function _startSessionCountdown() {
+  const label = document.getElementById('session-timer-label');
+  if (_sessionTimer) clearInterval(_sessionTimer);
+  _sessionTimer = setInterval(() => {
+    const remaining = Math.max(0, _sessionExpiry - Date.now());
+    if (remaining <= 0) {
+      clearInterval(_sessionTimer);
+      _expireSession();
+      return;
+    }
+    const hrs = Math.floor(remaining / 3600000);
+    const mins = Math.floor((remaining % 3600000) / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    label.textContent = `Sesión: ${hrs}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  }, 1000);
+}
+
+function _expireSession() {
+  try { sessionStorage.removeItem('spc_sess'); } catch(e) {}
+  document.getElementById('session-indicator').style.display = 'none';
+  document.getElementById('plat-login-overlay').style.display = 'flex';
+  document.getElementById('plat-login-user').value = '';
+  document.getElementById('plat-login-pass').value = '';
+  document.getElementById('plat-login-error').style.display = 'none';
+  // Si está en admin, cerrar también esa sesión
+  adminLoggedIn = false;
+  showToast('⏱ Sesión expirada. Ingrese nuevamente.');
+}
+
+function _checkExistingSession() {
+  try {
+    const saved = sessionStorage.getItem('spc_sess');
+    if (saved) {
+      const expiry = parseInt(saved);
+      if (Date.now() < expiry) {
+        _sessionExpiry = expiry;
+        document.getElementById('platform-login-overlay').style.display = 'none';
+        document.getElementById('session-indicator').style.display = 'block';
+        _startSessionCountdown();
+        return true;
+      }
+    }
+  } catch(e) {}
+  return false;
+}
+
+// ================================================================
 // INIT
 // ================================================================
-function initApp() {
+async function initApp() {
+  // Primero verificar sesión existente o mostrar login
+  const hasSession = _checkExistingSession();
+  if (!hasSession) {
+    document.getElementById('platform-login-overlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('plat-login-user').focus(), 100);
+  }
+
+  // Precargar storage cifrado en memoria
+  await _preloadEncryptedStorage();
+
   document.getElementById('reg-fecha').value = new Date().toLocaleDateString('es-CL', {
     year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'
   });
@@ -2256,6 +2628,11 @@ function loadConfig() {
 // NAVIGATION
 // ================================================================
 function showView(view) {
+  // Verificar sesión activa antes de navegar
+  if (!_sessionExpiry || Date.now() >= _sessionExpiry) {
+    _expireSession();
+    return;
+  }
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-'+view).classList.add('active');
@@ -2307,6 +2684,17 @@ function doLogout() {
 // ================================================================
 // EVALUATION FLOW
 // ================================================================
+function calcularEdad(fnac) {
+  const campoEdad = document.getElementById('reg-edad');
+  if (!fnac) { campoEdad.value = ''; return; }
+  const hoy = new Date();
+  const nac = new Date(fnac);
+  let edad = hoy.getFullYear() - nac.getFullYear();
+  const m = hoy.getMonth() - nac.getMonth();
+  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+  campoEdad.value = edad > 0 ? edad : '';
+}
+
 function onCargoChange() {
   const cargo = document.getElementById('reg-cargo').value;
   const info = document.getElementById('cargo-info');
@@ -3705,7 +4093,7 @@ function showToast(msg) {
 // ================================================================
 // BOOT
 // ================================================================
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', () => { initApp(); });
 </script>
 </body>
 </html>
